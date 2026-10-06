@@ -43,11 +43,11 @@ export function HeroSection() {
           ))}
         </h1>
       </div>
-      <div className="cinema-art" aria-hidden="true">
-        <span className="cinema-race-number">44</span>
-        <img className="cinema-car" src="/images/ferrari-44.png" alt="" width="1672" height="941" decoding="async" />
-        <img className="cinema-portrait cinema-human" src="/images/hamilton.png" alt="" width="735" height="835" fetchPriority="high" />
-        <img className="cinema-portrait cinema-goat" src="/images/hamilton-goat.png" alt="" width="1176" height="1337" decoding="async" />
+      <div className="cinema-art">
+        <span className="cinema-race-number" aria-hidden="true">44</span>
+        <img className="cinema-car" src="/images/ferrari-44.png" alt="Ferrari Formula 1 car. Hover or focus to bring it into the foreground." tabIndex={0} width="1672" height="941" decoding="async" />
+        <img className="cinema-portrait cinema-human" src="/images/hamilton.png" alt="Lewis Hamilton in a Ferrari racing suit" tabIndex={0} width="735" height="835" fetchPriority="high" />
+        <img className="cinema-portrait cinema-goat" src="/images/hamilton-goat.png" alt="Hamilton's artistic GOAT counterpart in a Ferrari racing suit" tabIndex={0} width="1176" height="1337" decoding="async" />
       </div>
       <div className="cinema-story">
         <p className="cinema-eyebrow">A LEGACY WITHOUT LIMITS</p>

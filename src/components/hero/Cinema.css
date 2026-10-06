@@ -75,11 +75,96 @@
 }
 .cinema-beam { position: absolute; top: 23%; bottom: 19%; width: 3px; background: #ff4050; box-shadow: 0 0 18px 5px #ff203570, 0 0 80px 28px #ed153a35; z-index: -1; opacity: .65; }
 .cinema-beam-left { left: 8%; }.cinema-beam-right { right: 8%; }
-.cinema-art { position: absolute; inset: 0; pointer-events: none; transform: translate(var(--scene-x), var(--scene-y)); transition: transform 650ms ease-out; }
+.cinema-art { position: absolute; inset: 0; pointer-events: none; }
 .cinema-race-number { position: absolute; top: 41%; left: 50%; transform: translateX(-50%); font-family: Impact, sans-serif; font-size: 210px; font-style: italic; color: #fff5e507; -webkit-text-stroke: 1px #fff5e51a; }
-.cinema-car { position: absolute; width: 52%; left: 24%; top: 40%; filter: brightness(.55) saturate(.85); opacity: .8; }
-.cinema-portrait { position: absolute; bottom: 0; width: 35%; max-height: 68%; object-fit: contain; object-position: bottom; filter: drop-shadow(0 0 30px #e82b3320); mask-image: linear-gradient(#000 75%, transparent 100%); }
+.cinema-car {
+  position: absolute;
+  z-index: 1;
+  width: 52%;
+  left: 24%;
+  top: 40%;
+  pointer-events: auto;
+  filter: brightness(.55) saturate(.85);
+  opacity: .8;
+  transform: translate(var(--scene-x), var(--scene-y));
+  transition: filter 450ms ease, opacity 450ms ease, transform 550ms cubic-bezier(.16, 1, .3, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .cinema-car:hover {
+    z-index: 6;
+    opacity: 1;
+    filter: brightness(1.15) saturate(1.1) drop-shadow(0 12px 35px #0009);
+    transform: translate(var(--scene-x), calc(var(--scene-y) - 12px)) scale(1.06);
+  }
+}
+.cinema-car:focus-visible {
+  z-index: 6;
+  opacity: 1;
+  filter: brightness(1.15) saturate(1.1) drop-shadow(0 12px 35px #0009);
+  transform: translate(var(--scene-x), calc(var(--scene-y) - 12px)) scale(1.06);
+  outline: 2px solid #ffdf55;
+  outline-offset: 6px;
+}
+.cinema-portrait {
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  width: 35%;
+  max-height: 68%;
+  object-fit: contain;
+  object-position: bottom;
+  pointer-events: auto;
+  transform: translate(var(--scene-x), var(--scene-y));
+  transform-origin: 50% 85%;
+  transition: transform 800ms cubic-bezier(.16, 1, .3, 1), filter 650ms ease;
+  filter: brightness(.95) saturate(.95) drop-shadow(0 0 30px #e82b3320);
+  mask-image: linear-gradient(#000 75%, transparent 100%);
+}
+@media (hover: hover) and (pointer: fine) {
+  .cinema-portrait:hover {
+    z-index: 7;
+    transform: translate(var(--scene-x), calc(var(--scene-y) - 10px)) scale(1.045) rotate(var(--portrait-tilt));
+    filter: brightness(1.12) saturate(1.15) contrast(1.04) drop-shadow(0 0 3px #ffbea780) drop-shadow(0 0 24px #ef254d70) drop-shadow(0 18px 35px #0009);
+  }
+}
+.cinema-portrait:focus-visible {
+  z-index: 7;
+  transform: translate(var(--scene-x), calc(var(--scene-y) - 10px)) scale(1.045) rotate(var(--portrait-tilt));
+  filter: brightness(1.12) saturate(1.15) contrast(1.04) drop-shadow(0 0 3px #ffbea780) drop-shadow(0 0 24px #ef254d70) drop-shadow(0 18px 35px #0009);
+  outline: 2px solid #ffdf55;
+  outline-offset: 6px;
+}
+.cinema-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at var(--portrait-spotlight-x, 20%) 65%, #ed254d45, transparent 48%);
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+.cinema-hero:has(.cinema-goat:focus-visible) { --portrait-spotlight-x: 80%; }
+.cinema-hero:has(.cinema-portrait:focus-visible)::before { opacity: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .cinema-hero:has(.cinema-goat:hover) { --portrait-spotlight-x: 80%; }
+  .cinema-hero:has(.cinema-portrait:hover)::before { opacity: 1; }
+}
 .cinema-human { left: -4%; }.cinema-goat { right: -4%; }
+.cinema-human {
+  --portrait-tilt: 1deg;
+  --portrait-entry-x: -25%;
+  animation: cinema-portrait-enter 1400ms cubic-bezier(.16, 1, .3, 1) 180ms both;
+}
+.cinema-goat {
+  --portrait-tilt: -1deg;
+  --portrait-entry-x: 25%;
+  animation: cinema-portrait-enter 1400ms cubic-bezier(.16, 1, .3, 1) 300ms both;
+}
+@keyframes cinema-portrait-enter {
+  from { opacity: 0; translate: var(--portrait-entry-x) 18px; }
+  to { opacity: 1; translate: 0 0; }
+}
 .cinema-story { position: absolute; z-index: 4; top: 62%; left: 29%; right: 29%; text-align: center; }
 .cinema-story::before { content: ''; position: absolute; inset: -35px -45px; z-index: -1; background: #100507b8; filter: blur(30px); border-radius: 50%; }
 .cinema-eyebrow { color: #ffdf55; font-size: 9px; letter-spacing: .3em; margin-bottom: 12px; }
@@ -132,13 +217,14 @@
 }
 .cinema-hero a:focus-visible { outline: 2px solid #ffdf55; outline-offset: 5px; }
 @media (prefers-reduced-motion: reduce) {
-  .cinema-story, .cinema-sir, .cinema-lewis, .cinema-title-wrap h1 > span {
+  .cinema-story, .cinema-sir, .cinema-lewis, .cinema-title-wrap h1 > span, .cinema-human, .cinema-goat {
     animation: none;
     opacity: 1;
     translate: none;
     clip-path: none;
   }
-  .cinema-art, .cinema-primary { transition: none; transform: none; }
+  .cinema-hero::before { transition: none; }
+  .cinema-art, .cinema-primary, .cinema-portrait, .cinema-portrait:hover, .cinema-portrait:focus-visible, .cinema-car, .cinema-car:hover, .cinema-car:focus-visible { transition: none; transform: none; }
 }
 
 /* Navigation sits outside the hero and needs its own palette tokens. */
