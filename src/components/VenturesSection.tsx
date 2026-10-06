@@ -4,6 +4,7 @@ import { VENTURES_AND_ADVOCACY } from '../data/portfolioData';
 export const VenturesSection: React.FC = () => {
   return (
     <section id="ventures" className="ventures-section" aria-labelledby="ventures-heading">
+      <div id="beyond-racing" className="section-anchor-shim" aria-hidden="true" />
       <div className="container">
         <div className="section-header text-center">
           <span className="section-badge cyan">Philanthropy &amp; Enterprise</span>

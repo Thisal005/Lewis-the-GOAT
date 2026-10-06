@@ -12,6 +12,7 @@ export const CareerStatsSection: React.FC = () => {
 
   return (
     <section id="career-stats" className="stats-section" aria-labelledby="stats-heading">
+      <div id="legacy" className="section-anchor-shim" aria-hidden="true" />
       <div className="container">
         {/* Section Header */}
         <div className="section-header">

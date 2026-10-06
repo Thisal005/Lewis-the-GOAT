@@ -15,6 +15,7 @@ export const MilestonesSection: React.FC = () => {
 
   return (
     <section id="milestones" className="milestones-section" aria-labelledby="milestones-heading">
+      <div id="journey" className="section-anchor-shim" aria-hidden="true" />
       <div className="container">
         <div className="section-header">
           <div className="flex-between-wrap">

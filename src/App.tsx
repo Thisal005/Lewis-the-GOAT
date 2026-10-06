@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-import { Navbar } from './components/Navbar';
+import { SiteNavigation } from './components/SiteNavigation';
 import { Hero } from './components/Hero';
 import { AboutSection } from './components/AboutSection';
 import { CareerStatsSection } from './components/CareerStatsSection';
@@ -56,7 +56,7 @@ export function App() {
         Skip to main content
       </a>
 
-      <Navbar activeSection={activeSection} />
+      <SiteNavigation activeSection={activeSection} />
 
       <main id="main-content" tabIndex={-1}>
         <Hero />

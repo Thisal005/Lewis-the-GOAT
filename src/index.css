@@ -85,6 +85,14 @@ section[id], div[id] {
   scroll-margin-top: calc(var(--nav-height) + 1.75rem);
 }
 
+.section-anchor-shim {
+  position: relative;
+  display: block;
+  visibility: hidden;
+  height: 0;
+  scroll-margin-top: calc(var(--nav-height) + 1.75rem);
+}
+
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
