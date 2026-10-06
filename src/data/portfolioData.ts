@@ -97,7 +97,7 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     summary: 'Debuted at the Australian GP with McLaren, taking 9 consecutive podiums in his first 9 races.',
     details: 'Achieved his maiden Grand Prix victory at Montreal (Canada) in just his 6th race, followed by victory in Indianapolis a week later. Finished runner-up in the World Championship by a single point.',
     team: 'McLaren',
-    accentColor: '#C0C0C0',
+    accentColor: 'var(--text-secondary)',
   },
   {
     year: '2008',
@@ -106,7 +106,7 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     summary: 'Became the youngest World Champion in F1 history at the time after an iconic last-lap pass in Brazil.',
     details: 'Took 5 victories, including an unforgettable masterclass in torrential rain at Silverstone winning by over 68 seconds. Clinched the title on the final corner of the final lap at Interlagos.',
     team: 'McLaren',
-    accentColor: '#FF8000',
+    accentColor: 'var(--accent-rose)',
   },
   {
     year: '2013',
@@ -115,7 +115,7 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     summary: 'Signed with the works Mercedes team, succeeding Michael Schumacher under team boss Niki Lauda.',
     details: 'Widely questioned by pundits at the time, the move positioned Hamilton ahead of the turbo-hybrid revolution and became one of the greatest strategic sporting decisions in history.',
     team: 'Mercedes-AMG',
-    accentColor: '#00D2BE',
+    accentColor: 'var(--accent-rose)',
   },
   {
     year: '2014 – 2015',
@@ -124,7 +124,7 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     summary: 'Dominated the new 1.6-litre V6 hybrid era with dominant championship campaigns.',
     details: 'Won 11 races in 2014 to secure his second title in Abu Dhabi, followed by 10 victories in 2015 to claim his third crown in Austin, Texas, matching his boyhood hero Ayrton Senna.',
     team: 'Mercedes-AMG',
-    accentColor: '#00D2BE',
+    accentColor: 'var(--accent-rose)',
   },
   {
     year: '2017 – 2020',
@@ -133,7 +133,7 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     summary: 'Four straight Drivers Championships (2017, 2018, 2019, 2020) to reach 7 World Titles.',
     details: 'Sealed his 7th World Title at the 2020 Turkish Grand Prix with an extraordinary wet-weather drive from 6th on the grid, matching Michael Schumacher’s record of seven world championships.',
     team: 'Mercedes-AMG',
-    accentColor: '#D4AF37',
+    accentColor: 'var(--accent-gold)',
   },
   {
     year: '2020 – 2021',
@@ -142,7 +142,7 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     summary: 'Surpassed Schumacher’s all-time win record (91) at Portimão and took his 100th win in Sochi.',
     details: 'At the 2020 Portuguese GP, took victory #92 to become F1’s outright winningest driver. In 2021 at Sochi, became the first driver in 71 years of Formula 1 to win 100 Grand Prix.',
     team: 'Mercedes-AMG',
-    accentColor: '#00D2BE',
+    accentColor: 'var(--accent-rose)',
   },
   {
     year: '2024',
@@ -151,7 +151,7 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     summary: 'Ended a 945-day win drought with a sensational emotional victory at the British Grand Prix.',
     details: 'Claimed his 9th win at Silverstone, setting the all-time F1 record for most victories by a driver at a single circuit. Followed with victory at the Belgian GP at Spa-Francorchamps.',
     team: 'Mercedes-AMG',
-    accentColor: '#00D2BE',
+    accentColor: 'var(--accent-rose)',
   },
   {
     year: '2025 – Present',
@@ -160,7 +160,7 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     summary: 'Joined Scuderia Ferrari in a multi-year deal, uniting F1’s most decorated driver with its most iconic team.',
     details: 'In February 2024, announced his departure from Mercedes after 12 storied seasons to realize a childhood dream: donning Ferrari scarlet and racing out of Maranello alongside Charles Leclerc.',
     team: 'Scuderia Ferrari',
-    accentColor: '#E8002D',
+    accentColor: 'var(--accent-rose)',
   },
 ];
 

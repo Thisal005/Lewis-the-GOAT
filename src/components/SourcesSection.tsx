@@ -6,7 +6,7 @@ export const SourcesSection: React.FC = () => {
     <section id="sources" className="sources-section" aria-labelledby="sources-heading">
       <div className="container">
         <div className="section-header">
-          <span className="section-badge cyan">Factual Transparency</span>
+          <span className="section-badge rose">Factual Transparency</span>
           <h2 id="sources-heading" className="section-title">
             Data Sources, Verification &amp; Attribution
           </h2>

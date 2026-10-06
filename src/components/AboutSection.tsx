@@ -6,7 +6,7 @@ export const AboutSection: React.FC = () => {
     <section id="about" className="about-section" aria-labelledby="about-heading">
       <div className="container">
         <div className="section-header text-center">
-          <span className="section-badge cyan">Driver Profile & Legacy</span>
+          <span className="section-badge rose">Driver Profile & Legacy</span>
           <h2 id="about-heading" className="section-title">
             The Stevenage Prodigy to Global Sporting Icon
           </h2>
@@ -59,7 +59,7 @@ export const AboutSection: React.FC = () => {
           {/* Core Racing Disciplines */}
           <div className="glass-card strengths-card">
             <div className="bio-card-header">
-              <span className="bio-icon cyan" aria-hidden="true">⚡</span>
+              <span className="bio-icon rose" aria-hidden="true">⚡</span>
               <h3>Technical Competence & Racecraft</h3>
             </div>
             

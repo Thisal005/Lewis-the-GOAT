@@ -55,7 +55,7 @@ export const CareerStatsSection: React.FC = () => {
         <div className="era-breakdown-card glass-card">
           <div className="era-header-flex">
             <div>
-              <span className="section-badge cyan">Team Chapter Analysis</span>
+              <span className="section-badge rose">Team Chapter Analysis</span>
               <h3 className="era-title">Career Production By Team Partnership</h3>
             </div>
 

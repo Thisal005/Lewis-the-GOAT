@@ -1,9 +1,39 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './Hero.css';
 import './Cinema.css';
 
 export function HeroSection() {
   const sceneRef = useRef<HTMLElement>(null);
+  const [selectedArtwork, setSelectedArtwork] = useState<string | null>(null);
+  const selectArtwork = (artwork: string) => setSelectedArtwork((current) => current === artwork ? null : artwork);
+
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame: number | null = null;
+    const update = () => {
+      frame = null;
+      const bounds = scene.getBoundingClientRect();
+      const progress = reducedMotion.matches ? 0 : Math.max(0, Math.min(1, -bounds.top / bounds.height));
+      const mobile = window.innerWidth <= 700;
+      scene.style.setProperty('--scroll-name-scale', String(1 - progress * (mobile ? .04 : .12)));
+      scene.style.setProperty('--scroll-name-opacity', String(1 - progress * .55));
+      scene.style.setProperty('--scroll-name-y', `${-progress * (mobile ? 12 : 45)}px`);
+      scene.style.setProperty('--scroll-art-y', `${progress * (mobile ? 8 : 34)}px`);
+    };
+    const schedule = () => { if (frame === null) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    reducedMotion.addEventListener('change', schedule);
+    return () => {
+      if (frame !== null) cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      reducedMotion.removeEventListener('change', schedule);
+    };
+  }, []);
 
   useEffect(() => {
     const scene = sceneRef.current;
@@ -27,13 +57,39 @@ export function HeroSection() {
     const scene = sceneRef.current;
     if (!scene) return;
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce), (pointer: coarse)');
+    let frame: number | null = null;
+    let activePortrait: HTMLElement | null = null;
+    const clearDepth = () => {
+      activePortrait?.style.removeProperty('--depth-x');
+      activePortrait?.style.removeProperty('--depth-y');
+      activePortrait = null;
+    };
     const move = (event: PointerEvent) => {
       if (motionPreference.matches || event.pointerType !== 'mouse') return;
-      const bounds = scene.getBoundingClientRect();
-      scene.style.setProperty('--scene-x', `${((event.clientX - bounds.left) / bounds.width - .5) * 12}px`);
-      scene.style.setProperty('--scene-y', `${((event.clientY - bounds.top) / bounds.height - .5) * 8}px`);
+      if (frame !== null) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        frame = null;
+        const bounds = scene.getBoundingClientRect();
+        scene.style.setProperty('--scene-x', `${((event.clientX - bounds.left) / bounds.width - .5) * 12}px`);
+        scene.style.setProperty('--scene-y', `${((event.clientY - bounds.top) / bounds.height - .5) * 8}px`);
+        scene.style.setProperty('--spotlight-x', `${event.clientX - bounds.left}px`);
+        scene.style.setProperty('--spotlight-y', `${event.clientY - bounds.top}px`);
+        const portrait = event.target instanceof HTMLElement ? event.target.closest<HTMLElement>('.cinema-portrait') : null;
+        if (portrait !== activePortrait) clearDepth();
+        activePortrait = portrait;
+        if (portrait) {
+          const rect = portrait.getBoundingClientRect();
+          const x = Math.max(-.5, Math.min(.5, (event.clientX - rect.left) / rect.width - .5));
+          const y = Math.max(-.5, Math.min(.5, (event.clientY - rect.top) / rect.height - .5));
+          portrait.style.setProperty('--depth-x', `${x * 5}deg`);
+          portrait.style.setProperty('--depth-y', `${-y * 4}deg`);
+        }
+      });
     };
     const reset = () => {
+      if (frame !== null) cancelAnimationFrame(frame);
+      frame = null;
+      clearDepth();
       scene.style.setProperty('--scene-x', '0px');
       scene.style.setProperty('--scene-y', '0px');
     };
@@ -41,6 +97,7 @@ export function HeroSection() {
     scene.addEventListener('pointerleave', reset);
     motionPreference.addEventListener('change', reset);
     return () => {
+      reset();
       scene.removeEventListener('pointermove', move);
       scene.removeEventListener('pointerleave', reset);
       motionPreference.removeEventListener('change', reset);
@@ -48,9 +105,10 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section id="hero" ref={sceneRef} className="cinema-hero" aria-labelledby="cinema-title">
+    <section id="hero" ref={sceneRef} className="cinema-hero" aria-labelledby="cinema-title" data-selected-artwork={selectedArtwork ?? undefined}>
       <div className="cinema-atmosphere" aria-hidden="true" />
       <div className="cinema-grain" aria-hidden="true" />
+      <div className="cinema-pointer-light" aria-hidden="true" />
       <div className="cinema-beam cinema-beam-left" aria-hidden="true" />
       <div className="cinema-beam cinema-beam-right" aria-hidden="true" />
       <div className="cinema-topline"><span><i /> THE MAKING OF A LEGEND</span><span>DRIVER. CREATOR. CHANGEMAKER.</span></div>
@@ -64,9 +122,17 @@ export function HeroSection() {
       </div>
       <div className="cinema-art">
         <span className="cinema-race-number" aria-hidden="true">44</span>
-        <img className="cinema-car" src="/images/ferrari-44.png" alt="Ferrari Formula 1 car. Hover or focus to bring it into the foreground." tabIndex={0} width="1672" height="941" decoding="async" />
-        <img className="cinema-portrait cinema-human" src="/images/hamilton.png" alt="Lewis Hamilton in a Ferrari racing suit" tabIndex={0} width="735" height="835" fetchPriority="high" />
-        <img className="cinema-portrait cinema-goat" src="/images/hamilton-goat.png" alt="Hamilton's artistic GOAT counterpart in a Ferrari racing suit" tabIndex={0} width="1176" height="1337" decoding="async" />
+        <img className="cinema-car" src="/images/ferrari-44.png" alt="Ferrari Formula 1 car. Hover or focus to bring it into the foreground." tabIndex={0} width="1672" height="941" decoding="async" onPointerUp={(event) => { if (event.pointerType === 'touch') selectArtwork('car'); }} />
+        <img className="cinema-portrait cinema-human" src="/images/hamilton.png" alt="Lewis Hamilton in a Ferrari racing suit" tabIndex={0} width="735" height="835" fetchPriority="high" onPointerUp={(event) => { if (event.pointerType === 'touch') selectArtwork('human'); }} />
+        <img className="cinema-portrait cinema-goat" src="/images/hamilton-goat.png" alt="Hamilton's artistic GOAT counterpart in a Ferrari racing suit" tabIndex={0} width="1176" height="1337" decoding="async" onPointerUp={(event) => { if (event.pointerType === 'touch') selectArtwork('goat'); }} />
+      </div>
+      <div className="cinema-touch-controls" role="group" aria-label="Highlight hero artwork">
+        <p>Tap to explore</p>
+        <div>
+          {[['human', 'Hamilton'], ['car', 'Ferrari'], ['goat', 'GOAT']].map(([id, label]) => (
+            <button key={id} type="button" aria-pressed={selectedArtwork === id} onClick={() => selectArtwork(id)}>{label}</button>
+          ))}
+        </div>
       </div>
       <div className="cinema-story">
         <p className="cinema-eyebrow">A LEGACY WITHOUT LIMITS</p>

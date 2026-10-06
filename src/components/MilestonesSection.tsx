@@ -20,7 +20,7 @@ export const MilestonesSection: React.FC = () => {
         <div className="section-header">
           <div className="flex-between-wrap">
             <div>
-              <span className="section-badge cyan">Chronicle of Greatness</span>
+              <span className="section-badge rose">Chronicle of Greatness</span>
               <h2 id="milestones-heading" className="section-title">
                 Career Eras &amp; Historic Milestones
               </h2>

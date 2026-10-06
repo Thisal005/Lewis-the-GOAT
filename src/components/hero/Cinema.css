@@ -2,6 +2,7 @@
 .cinema-hero {
   --scene-x: 0px;
   --scene-y: 0px;
+  --scroll-art-y: 0px;
   --intro-sir: 180ms;
   --intro-lewis: 300ms;
   --intro-name: 420ms;
@@ -73,6 +74,10 @@
   container-type: inline-size;
   text-align: left;
   z-index: 0;
+  scale: var(--scroll-name-scale, 1);
+  translate: 0 var(--scroll-name-y, 0px);
+  opacity: var(--scroll-name-opacity, 1);
+  transform-origin: center top;
 }
 .cinema-kicker {
   position: relative;
@@ -140,7 +145,7 @@
   pointer-events: auto;
   filter: brightness(.55) saturate(.85);
   opacity: .8;
-  transform: translate(var(--scene-x), var(--scene-y));
+  transform: translate(var(--scene-x), calc(var(--scene-y) + var(--scroll-art-y)));
   transition: filter 450ms ease, opacity 450ms ease, transform 550ms cubic-bezier(.16, 1, .3, 1);
   animation: cinema-car-enter 1000ms cubic-bezier(.16, 1, .3, 1) var(--intro-car) backwards;
 }
@@ -153,14 +158,14 @@
     z-index: 6;
     opacity: 1;
     filter: brightness(1.15) saturate(1.1) drop-shadow(0 12px 35px #0009);
-    transform: translate(var(--scene-x), calc(var(--scene-y) - 12px)) scale(1.06);
+    transform: translate(var(--scene-x), calc(var(--scene-y) + var(--scroll-art-y) - 12px)) scale(1.06);
   }
 }
 .cinema-car:focus-visible {
   z-index: 6;
   opacity: 1;
   filter: brightness(1.15) saturate(1.1) drop-shadow(0 12px 35px #0009);
-  transform: translate(var(--scene-x), calc(var(--scene-y) - 12px)) scale(1.06);
+  transform: translate(var(--scene-x), calc(var(--scene-y) + var(--scroll-art-y) - 12px)) scale(1.06);
   outline: 2px solid #ffdf55;
   outline-offset: 6px;
 }
@@ -173,7 +178,7 @@
   object-fit: contain;
   object-position: bottom;
   pointer-events: auto;
-  transform: translate(var(--scene-x), var(--scene-y));
+  transform: translate(var(--scene-x), calc(var(--scene-y) + var(--scroll-art-y)));
   transform-origin: 50% 85%;
   transition: transform 800ms cubic-bezier(.16, 1, .3, 1), filter 650ms ease;
   filter: brightness(.95) saturate(.95) drop-shadow(0 0 30px #e82b3320);
@@ -182,13 +187,13 @@
 @media (hover: hover) and (pointer: fine) {
   .cinema-portrait:hover {
     z-index: 7;
-    transform: translate(var(--scene-x), calc(var(--scene-y) - 10px)) scale(1.045) rotate(var(--portrait-tilt));
+    transform: perspective(1000px) translate(var(--scene-x), calc(var(--scene-y) + var(--scroll-art-y) - 10px)) scale(1.045) rotate(var(--portrait-tilt)) rotateX(var(--depth-y, 0deg)) rotateY(var(--depth-x, 0deg));
     filter: brightness(1.12) saturate(1.15) contrast(1.04) drop-shadow(0 0 3px #ffbea780) drop-shadow(0 0 24px #ef254d70) drop-shadow(0 18px 35px #0009);
   }
 }
 .cinema-portrait:focus-visible {
   z-index: 7;
-  transform: translate(var(--scene-x), calc(var(--scene-y) - 10px)) scale(1.045) rotate(var(--portrait-tilt));
+  transform: translate(var(--scene-x), calc(var(--scene-y) + var(--scroll-art-y) - 10px)) scale(1.045) rotate(var(--portrait-tilt));
   filter: brightness(1.12) saturate(1.15) contrast(1.04) drop-shadow(0 0 3px #ffbea780) drop-shadow(0 0 24px #ef254d70) drop-shadow(0 18px 35px #0009);
   outline: 2px solid #ffdf55;
   outline-offset: 6px;
@@ -205,9 +210,21 @@
 }
 .cinema-hero:has(.cinema-goat:focus-visible) { --portrait-spotlight-x: 80%; }
 .cinema-hero:has(.cinema-portrait:focus-visible)::before { opacity: 1; }
+.cinema-pointer-light {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  width: clamp(300px, 38vw, 650px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle, #ffd3ae12 0%, #ef254d28 25%, #ed254d10 48%, transparent 70%);
+  transform: translate(calc(var(--spotlight-x, 0px) - 50%), calc(var(--spotlight-y, 0px) - 50%));
+  transition: opacity 500ms ease, transform 150ms ease-out;
+}
 @media (hover: hover) and (pointer: fine) {
-  .cinema-hero:has(.cinema-goat:hover) { --portrait-spotlight-x: 80%; }
-  .cinema-hero:has(.cinema-portrait:hover)::before { opacity: 1; }
+  .cinema-hero:has(.cinema-portrait:hover) .cinema-pointer-light { opacity: 1; }
 }
 .cinema-human { left: -4%; }.cinema-goat { right: -4%; }
 .cinema-human {
@@ -268,10 +285,31 @@
   .cinema-sir { font-size: 18cqw; top: -3cqw; }
   .cinema-lewis { font-size: 10cqw; }
   .cinema-title-wrap h1 { font-size: 24cqw; }
-  .cinema-art { position: relative; inset: auto; height: clamp(245px, 75vw, 350px); flex-shrink: 0; margin: -15px -24px 0; transform: none; }.cinema-portrait { width: 52%; max-height: 100%; bottom: 0; }.cinema-human { left: -5%; }.cinema-goat { right: -5%; }.cinema-car { width: 74%; left: 13%; top: 28%; }.cinema-race-number { top: 35%; font-size: 100px; }
+  .cinema-art { position: relative; isolation: isolate; overflow: hidden; inset: auto; height: clamp(245px, 75vw, 350px); flex-shrink: 0; margin: -15px -24px 0; transform: none; }.cinema-portrait { width: 55%; max-height: 100%; bottom: 0; }.cinema-human { left: -6%; }.cinema-goat { right: -6%; }.cinema-car { width: 78%; left: 11%; top: 28%; }.cinema-race-number { top: 35%; font-size: 100px; }
   .cinema-story { position: relative; top: auto; left: auto; right: auto; margin-top: -8px; }.cinema-story h2 { font-size: 38px; }.cinema-description { font-size: 12px; }.cinema-actions { flex-direction: row; gap: 18px; margin-top: 22px; }.cinema-primary { padding: 15px; gap: 14px; font-size: 10px; }.cinema-secondary { font-size: 10px; }
   .cinema-bottom { position: relative; bottom: auto; left: auto; right: auto; margin-top: 36px; padding-top: 18px; flex-wrap: wrap; gap: 20px; }.cinema-scroll { font-size: 8px; }.cinema-bottom p { width: 100%; text-align: center; }.cinema-bottom p span { display: none; }.cinema-champion strong { font-size: 30px; }
   .cinema-beam { top: 22%; bottom: 43%; }.cinema-beam-left { left: 5%; }.cinema-beam-right { right: 5%; }
+}
+.cinema-touch-controls { display: none; }
+@media (max-width: 700px) {
+  .cinema-touch-controls { display: block; position: relative; z-index: 4; margin: 4px 0 24px; text-align: center; }
+  .cinema-touch-controls p { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: #c8b5b1; margin-bottom: 8px; }
+  .cinema-touch-controls > div { display: flex; justify-content: center; gap: 8px; }
+  .cinema-touch-controls button { min-height: 44px; padding: 10px 16px; border: 1px solid #fff5e530; border-radius: 999px; color: #fff5e5; background: #ffffff05; font-size: 11px; touch-action: manipulation; transition: color 200ms ease, background 200ms ease; }
+  .cinema-touch-controls button[aria-pressed='true'] { background: #ffdf55; color: #100507; border-color: #ffdf55; }
+  .cinema-touch-controls button:focus-visible { outline: 2px solid #ffdf55; outline-offset: 3px; }
+  .cinema-hero[data-selected-artwork='human'] .cinema-human,
+  .cinema-hero[data-selected-artwork='goat'] .cinema-goat {
+    z-index: 7;
+    filter: brightness(1.12) saturate(1.15) drop-shadow(0 0 16px #ef254d70);
+    transform: translateY(var(--scroll-art-y)) scale(1.025);
+  }
+  .cinema-hero[data-selected-artwork='car'] .cinema-car {
+    z-index: 7;
+    opacity: 1;
+    filter: brightness(1.15) saturate(1.1) drop-shadow(0 6px 20px #0009);
+    transform: translateY(var(--scroll-art-y)) scale(1.025);
+  }
 }
 @media (max-width: 380px) {
   .cinema-story h2 { font-size: 32px; }
@@ -282,6 +320,7 @@
 }
 .cinema-hero a:focus-visible { outline: 2px solid #ffdf55; outline-offset: 5px; }
 @media (prefers-reduced-motion: reduce) {
+  .cinema-title-wrap { scale: none; translate: none; opacity: 1; }
   .cinema-topline, .cinema-story > *, .cinema-bottom, .cinema-car,
   .cinema-atmosphere, .cinema-atmosphere::before, .cinema-atmosphere::after, .cinema-beam, .cinema-grain,
   .cinema-sir, .cinema-lewis, .cinema-title-wrap h1 > span, .cinema-human, .cinema-goat {
@@ -296,7 +335,11 @@
   .cinema-beam { opacity: .5; }
   .cinema-grain { opacity: .025; transform: none; }
   .cinema-hero::before { transition: none; }
+  .cinema-pointer-light { display: none; }
+  .cinema-hero:has(.cinema-goat:hover) { --portrait-spotlight-x: 80%; }
+  .cinema-hero:has(.cinema-portrait:hover)::before { opacity: 1; }
   .cinema-art, .cinema-primary, .cinema-portrait, .cinema-portrait:hover, .cinema-portrait:focus-visible, .cinema-car, .cinema-car:hover, .cinema-car:focus-visible { transition: none; transform: none; }
+  .cinema-hero[data-selected-artwork] .cinema-art img { transform: none; }
 }
 
 /* Navigation sits outside the hero and needs its own palette tokens. */
