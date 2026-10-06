@@ -36,8 +36,10 @@ export function HeroSection() {
       <div className="cinema-beam cinema-beam-right" aria-hidden="true" />
       <div className="cinema-topline"><span><i /> THE MAKING OF A LEGEND</span><span>DRIVER. CREATOR. CHANGEMAKER.</span></div>
       <div className="cinema-title-wrap">
-        <p className="cinema-kicker"><span>Sir</span> LEWIS</p>
-        <h1 id="cinema-title" aria-label="Sir Lewis Hamilton">HAMILTON</h1>
+        <p className="cinema-kicker" aria-hidden="true"><span className="cinema-sir">Sir</span><span className="cinema-lewis">LEWIS</span></p>
+        <h1 id="cinema-title" aria-label="Sir Lewis Hamilton">
+          {'HAMILTON'.split('').map((letter, index) => <span key={index} aria-hidden="true">{letter}</span>)}
+        </h1>
       </div>
       <div className="cinema-art" aria-hidden="true">
         <span className="cinema-race-number">44</span>
