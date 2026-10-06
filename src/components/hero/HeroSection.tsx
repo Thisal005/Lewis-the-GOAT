@@ -8,6 +8,24 @@ export function HeroSection() {
   useEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      scene.dataset.ambientActive = String(entry.isIntersecting && !document.hidden);
+    });
+    const updateVisibility = () => {
+      const bounds = scene.getBoundingClientRect();
+      scene.dataset.ambientActive = String(!document.hidden && bounds.bottom > 0 && bounds.top < window.innerHeight);
+    };
+    observer.observe(scene);
+    document.addEventListener('visibilitychange', updateVisibility);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', updateVisibility);
+    };
+  }, []);
+
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce), (pointer: coarse)');
     const move = (event: PointerEvent) => {
       if (motionPreference.matches || event.pointerType !== 'mouse') return;
@@ -32,6 +50,7 @@ export function HeroSection() {
   return (
     <section id="hero" ref={sceneRef} className="cinema-hero" aria-labelledby="cinema-title">
       <div className="cinema-atmosphere" aria-hidden="true" />
+      <div className="cinema-grain" aria-hidden="true" />
       <div className="cinema-beam cinema-beam-left" aria-hidden="true" />
       <div className="cinema-beam cinema-beam-right" aria-hidden="true" />
       <div className="cinema-topline"><span><i /> THE MAKING OF A LEGEND</span><span>DRIVER. CREATOR. CHANGEMAKER.</span></div>
@@ -39,7 +58,7 @@ export function HeroSection() {
         <p className="cinema-kicker" aria-hidden="true"><span className="cinema-sir">Sir</span><span className="cinema-lewis">LEWIS</span></p>
         <h1 id="cinema-title" aria-label="Sir Lewis Hamilton">
           {'HAMILTON'.split('').map((letter, index) => (
-            <span key={index} aria-hidden="true" style={{ animationDelay: `${360 + index * 65}ms` }}>{letter}</span>
+            <span key={index} aria-hidden="true" style={{ animationDelay: `calc(var(--intro-name) + ${index * 65}ms)` }}>{letter}</span>
           ))}
         </h1>
       </div>
@@ -53,10 +72,7 @@ export function HeroSection() {
         <p className="cinema-eyebrow">A LEGACY WITHOUT LIMITS</p>
         <h2>Beyond the limit<span>.</span></h2>
         <p className="cinema-description">Driven by purpose. Defined by legacy.<br />Discover the man beyond the racing line.</p>
-        <div className="cinema-actions">
-          <a className="cinema-primary" href="#legacy">Explore the legacy <span aria-hidden="true">&#8599;</span></a>
-          <a className="cinema-secondary" href="#beyond-racing">Beyond racing <span aria-hidden="true">&#8599;</span></a>
-        </div>
+       
       </div>
       <div className="cinema-bottom">
         <div className="cinema-champion"><strong>7&times;</strong><span>WORLD<br />CHAMPION</span></div>

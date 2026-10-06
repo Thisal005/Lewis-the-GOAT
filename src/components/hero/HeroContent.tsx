@@ -54,44 +54,7 @@ export const HeroContent: React.FC<HeroContentProps> = ({
           </p>
         </div>
 
-        {/* Action Group */}
-        <div className="corridor-actions-group">
-          {/* Primary CTA */}
-          <a
-            href="#legacy"
-            className="hero-cta-button"
-            id="hero-primary-cta"
-            aria-label="Explore the legacy of Lewis Hamilton"
-          >
-            <span className="cta-label">EXPLORE THE LEGACY</span>
-            <svg
-              className="cta-arrow"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <line x1="4" y1="12" x2="20" y2="12" />
-              <polyline points="14 6 20 12 14 18" />
-            </svg>
-          </a>
 
-          {/* Secondary Link */}
-          <a
-            href="#beyond-racing"
-            className="hero-secondary-link"
-            id="hero-secondary-cta"
-          >
-            <span className="link-dash" aria-hidden="true">&mdash;</span>
-            <span>BEYOND RACING</span>
-            <span className="link-dash" aria-hidden="true">&mdash;</span>
-          </a>
-        </div>
 
         {/* Scroll Cue & Fan Disclaimer */}
         <div className="corridor-footer-group">
