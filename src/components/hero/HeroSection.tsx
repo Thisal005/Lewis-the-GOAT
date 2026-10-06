@@ -38,7 +38,9 @@ export function HeroSection() {
       <div className="cinema-title-wrap">
         <p className="cinema-kicker" aria-hidden="true"><span className="cinema-sir">Sir</span><span className="cinema-lewis">LEWIS</span></p>
         <h1 id="cinema-title" aria-label="Sir Lewis Hamilton">
-          {'HAMILTON'.split('').map((letter, index) => <span key={index} aria-hidden="true">{letter}</span>)}
+          {'HAMILTON'.split('').map((letter, index) => (
+            <span key={index} aria-hidden="true" style={{ animationDelay: `${360 + index * 65}ms` }}>{letter}</span>
+          ))}
         </h1>
       </div>
       <div className="cinema-art" aria-hidden="true">

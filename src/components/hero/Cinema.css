@@ -96,7 +96,17 @@
 .cinema-champion { display: flex; gap: 12px; align-items: center; }.cinema-champion strong { font-size: 35px; font-weight: 500; line-height: 1; }.cinema-champion span { font-size: 9px; line-height: 1.6; letter-spacing: .15em; color: #c8b5b1; }
 .cinema-scroll { display: flex; align-items: center; gap: 12px; font-size: 9px; letter-spacing: .16em; min-height: 44px; }.cinema-scroll span { font-size: 24px; }.cinema-scroll:hover { color: #ffdf55; }
 .cinema-bottom p { font-size: 8px; letter-spacing: .15em; color: #c8b5b1; text-align: right; }.cinema-bottom p span { display: block; margin-top: 5px; color: #806867; }
-.cinema-title-wrap, .cinema-story { animation: cinema-reveal 900ms ease both; }.cinema-story { animation-delay: 150ms; }
+.cinema-story { animation: cinema-reveal 900ms ease 150ms both; }
+.cinema-sir { animation: cinema-name-reveal 750ms cubic-bezier(.16, 1, .3, 1) 100ms both; }
+.cinema-lewis { animation: cinema-name-reveal 800ms cubic-bezier(.16, 1, .3, 1) 220ms both; }
+.cinema-title-wrap h1 > span {
+  display: block;
+  animation: cinema-name-reveal 900ms cubic-bezier(.16, 1, .3, 1) both;
+}
+@keyframes cinema-name-reveal {
+  from { opacity: 0; translate: 0 .22em; clip-path: inset(0 0 100% 0); }
+  to { opacity: 1; translate: 0 0; clip-path: inset(0 0 0 0); }
+}
 @keyframes cinema-reveal { from { opacity: 0; translate: 0 18px; } to { opacity: 1; translate: 0 0; } }
 @media (min-width: 1600px) { .cinema-portrait { width: 33%; }.cinema-story { top: 64%; } }
 @media (max-width: 1050px) { .cinema-actions { flex-direction: column; gap: 8px; }.cinema-story { top: 57%; }.cinema-portrait { width: 39%; }.cinema-human { left: -8%; }.cinema-goat { right: -8%; } }
@@ -121,7 +131,15 @@
   .cinema-scroll { letter-spacing: .08em; }
 }
 .cinema-hero a:focus-visible { outline: 2px solid #ffdf55; outline-offset: 5px; }
-@media (prefers-reduced-motion: reduce) { .cinema-title-wrap, .cinema-story { animation: none; }.cinema-art, .cinema-primary { transition: none; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .cinema-story, .cinema-sir, .cinema-lewis, .cinema-title-wrap h1 > span {
+    animation: none;
+    opacity: 1;
+    translate: none;
+    clip-path: none;
+  }
+  .cinema-art, .cinema-primary { transition: none; transform: none; }
+}
 
 /* Navigation sits outside the hero and needs its own palette tokens. */
 .site-navigation {
