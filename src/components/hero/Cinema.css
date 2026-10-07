@@ -1,4 +1,9 @@
 /* Cinematic scene: independent of the original poster layout. */
+.cinema-scroll-track {
+  position: relative;
+  height: calc(var(--hero-scene-height, max(850px, 100svh)) + 115svh);
+  background: #100507;
+}
 .cinema-hero {
   --scene-x: 0px;
   --scene-y: 0px;
@@ -11,11 +16,11 @@
   --intro-car: 1050ms;
   --intro-story: 1300ms;
   --intro-actions: 1500ms;
-  position: relative;
+  position: sticky;
+  top: var(--hero-pin-top, 0px);
   isolation: isolate;
   min-height: 850px;
   height: 100svh;
-  max-height: 1200px;
   overflow: hidden;
   background: #100507;
   color: #fff5e5;
@@ -136,19 +141,45 @@
 .cinema-hero[data-ambient-active='false'] .cinema-atmosphere::after { animation-play-state: paused; }
 .cinema-art { position: absolute; inset: 0; pointer-events: none; }
 .cinema-race-number { position: absolute; top: 41%; left: 50%; transform: translateX(-50%); font-family: Impact, sans-serif; font-size: 210px; font-style: italic; color: #fff5e507; -webkit-text-stroke: 1px #fff5e51a; }
-.cinema-car {
+.cinema-car-drive {
   position: absolute;
   z-index: 1;
   width: 52%;
   left: 24%;
   top: 40%;
+  transform-origin: 50% 40%;
+  transform: translate3d(0, var(--drive-y, 0px), 0) scale(var(--drive-scale, 1));
+  opacity: var(--drive-opacity, 1);
+}
+.cinema-car-drive:has(.cinema-car:hover, .cinema-car:focus-visible),
+.cinema-hero[data-selected-artwork='car'] .cinema-car-drive,
+.cinema-hero[data-driving='true'] .cinema-car-drive { z-index: 8; }
+.cinema-hero[data-ambient-active='true'] .cinema-car-drive {
+  will-change: transform, opacity;
+}
+.cinema-hero[data-scroll-started='true'] .cinema-car { animation: none; }
+.cinema-car {
+  display: block;
+  width: 100%;
   pointer-events: auto;
-  filter: brightness(.55) saturate(.85);
-  opacity: .8;
+  filter: brightness(var(--drive-brightness, .55)) saturate(.85);
+  opacity: var(--drive-image-opacity, .8);
   transform: translate(var(--scene-x), calc(var(--scene-y) + var(--scroll-art-y)));
   transition: filter 450ms ease, opacity 450ms ease, transform 550ms cubic-bezier(.16, 1, .3, 1);
   animation: cinema-car-enter 1000ms cubic-bezier(.16, 1, .3, 1) var(--intro-car) backwards;
 }
+/* Scroll owns the car during the drive; hover and intro effects cannot delay it. */
+.cinema-hero[data-driving='true'] .cinema-car {
+  pointer-events: none;
+  animation: none;
+  transition: none;
+  transform: none;
+  filter: brightness(var(--drive-brightness)) saturate(1.1);
+  opacity: var(--drive-image-opacity);
+}
+.cinema-story, .cinema-touch-controls { opacity: var(--drive-copy-opacity, 1); }
+.cinema-hero[data-driving='true'] .cinema-story,
+.cinema-hero[data-driving='true'] .cinema-touch-controls { pointer-events: none; }
 @keyframes cinema-car-enter {
   from { opacity: 0; translate: 0 22px; }
   to { opacity: .8; translate: 0 0; }
@@ -285,7 +316,8 @@
   .cinema-sir { font-size: 18cqw; top: -3cqw; }
   .cinema-lewis { font-size: 10cqw; }
   .cinema-title-wrap h1 { font-size: 24cqw; }
-  .cinema-art { position: relative; isolation: isolate; overflow: hidden; inset: auto; height: clamp(245px, 75vw, 350px); flex-shrink: 0; margin: -15px -24px 0; transform: none; }.cinema-portrait { width: 55%; max-height: 100%; bottom: 0; }.cinema-human { left: -6%; }.cinema-goat { right: -6%; }.cinema-car { width: 78%; left: 11%; top: 28%; }.cinema-race-number { top: 35%; font-size: 100px; }
+  .cinema-scroll-track { height: calc(var(--hero-scene-height, 100svh) + 90svh); }
+  .cinema-art { position: relative; inset: auto; height: clamp(245px, 75vw, 350px); flex-shrink: 0; margin: -15px -24px 0; transform: none; }.cinema-portrait { width: 55%; max-height: 100%; bottom: 0; }.cinema-human { left: -6%; }.cinema-goat { right: -6%; }.cinema-car-drive { width: 78%; left: 11%; top: 28%; }.cinema-race-number { top: 35%; font-size: 100px; }
   .cinema-story { position: relative; top: auto; left: auto; right: auto; margin-top: -8px; }.cinema-story h2 { font-size: 38px; }.cinema-description { font-size: 12px; }.cinema-actions { flex-direction: row; gap: 18px; margin-top: 22px; }.cinema-primary { padding: 15px; gap: 14px; font-size: 10px; }.cinema-secondary { font-size: 10px; }
   .cinema-bottom { position: relative; bottom: auto; left: auto; right: auto; margin-top: 36px; padding-top: 18px; flex-wrap: wrap; gap: 20px; }.cinema-scroll { font-size: 8px; }.cinema-bottom p { width: 100%; text-align: center; }.cinema-bottom p span { display: none; }.cinema-champion strong { font-size: 30px; }
   .cinema-beam { top: 22%; bottom: 43%; }.cinema-beam-left { left: 5%; }.cinema-beam-right { right: 5%; }
@@ -320,6 +352,11 @@
 }
 .cinema-hero a:focus-visible { outline: 2px solid #ffdf55; outline-offset: 5px; }
 @media (prefers-reduced-motion: reduce) {
+  .cinema-scroll-track { height: auto; }
+  .cinema-hero { position: relative; top: auto; }
+  .cinema-car-drive { transform: none; opacity: 1; }
+  .cinema-hero[data-ambient-active='true'] .cinema-car-drive { will-change: auto; }
+  .cinema-story, .cinema-touch-controls { opacity: 1; }
   .cinema-title-wrap { scale: none; translate: none; opacity: 1; }
   .cinema-topline, .cinema-story > *, .cinema-bottom, .cinema-car,
   .cinema-atmosphere, .cinema-atmosphere::before, .cinema-atmosphere::after, .cinema-beam, .cinema-grain,
