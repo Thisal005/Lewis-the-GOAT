@@ -1,131 +1,125 @@
-import React, { useState } from 'react';
-import {
-  DETAILED_CAREER_STATS,
-  ERA_BREAKDOWN,
-  STATS_VERIFICATION_DATE,
-} from '../data/portfolioData';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { DETAILED_CAREER_STATS, ERA_BREAKDOWN, QUICK_STATS, STATS_VERIFICATION_DATE } from '../data/portfolioData';
+import './CareerStatsSection.css';
 
-export const CareerStatsSection: React.FC = () => {
-  const [selectedEra, setSelectedEra] = useState<string>('mercedes');
+const eraIds = ['mclaren', 'mercedes', 'ferrari'];
+const eraLabels: Record<string, string> = { mclaren: 'McLaren', mercedes: 'Mercedes', ferrari: 'Ferrari' };
+const recordLabels = ['World titles', 'Grand Prix wins', 'Pole positions', 'Podium finishes'];
 
-  const activeEraData = ERA_BREAKDOWN.find((e) => e.id === selectedEra) || ERA_BREAKDOWN[0];
+export function CareerStatsSection() {
+  const [selectedEra, setSelectedEra] = useState('mercedes');
+  const sectionRef = useRef<HTMLElement>(null);
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const activeEra = ERA_BREAKDOWN.find(era => era.id === selectedEra) ?? ERA_BREAKDOWN[0];
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const scene = section?.querySelector<HTMLElement>('.legacy-scene');
+    if (!section || !scene) return;
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame: number | null = null;
+    let visible = false;
+    const update = () => {
+      frame = null;
+      const bounds = scene.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, (window.innerHeight - bounds.top) / (window.innerHeight + bounds.height)));
+      const depth = motion.matches ? 0 : (progress - .5) * 2;
+      const mobile = window.innerWidth <= 700;
+      section.style.setProperty('--legacy-portrait-y', `${depth * (mobile ? 10 : 30)}px`);
+      section.style.setProperty('--legacy-title-y', `${-depth * (mobile ? 6 : 20)}px`);
+      section.style.setProperty('--legacy-number-y', `${-depth * (mobile ? 12 : 50)}px`);
+    };
+    const schedule = () => { if (visible && !document.hidden && frame === null) frame = requestAnimationFrame(update); };
+    const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; schedule(); });
+    observer.observe(section);
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          (entry.target as HTMLElement).dataset.revealed = 'true';
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: .15 });
+    section.querySelectorAll('.legacy-headline, .legacy-deck, .legacy-description, .legacy-record, .legacy-eras, .legacy-detail').forEach(el => revealObserver.observe(el));
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    document.addEventListener('visibilitychange', schedule);
+    motion.addEventListener('change', update);
+    return () => {
+      observer.disconnect();
+      revealObserver.disconnect();
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      document.removeEventListener('visibilitychange', schedule);
+      motion.removeEventListener('change', update);
+      if (frame !== null) cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  const navigateTabs = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let next = index;
+    if (event.key === 'ArrowRight') next = (index + 1) % eraIds.length;
+    else if (event.key === 'ArrowLeft') next = (index + eraIds.length - 1) % eraIds.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = eraIds.length - 1;
+    else return;
+    event.preventDefault();
+    setSelectedEra(eraIds[next]);
+    tabRefs.current[next]?.focus();
+  };
 
   return (
-    <section id="career-stats" className="stats-section" aria-labelledby="stats-heading">
+    <section ref={sectionRef} id="career-stats" className="stats-section cinematic-legacy" aria-labelledby="stats-heading">
       <div id="legacy" className="section-anchor-shim" aria-hidden="true" />
-      <div className="container">
-        {/* Section Header */}
-        <div className="section-header">
-          <div className="flex-between-wrap">
-            <div>
-              <span className="section-badge gold">Telemetry & Records</span>
-              <h2 id="stats-heading" className="section-title">
-                All-Time Formula 1 Career Records
-              </h2>
-            </div>
-            
-            {/* Dated Statistics Pill */}
-            <div className="date-verification-card">
-              <span className="clock-icon" aria-hidden="true">⏱</span>
-              <div>
-                <span className="date-label">Statistics Verification Date</span>
-                <span className="date-value">{STATS_VERIFICATION_DATE}</span>
-              </div>
-            </div>
+      <div className="legacy-shell">
+        <div className="legacy-chapter"><span><i aria-hidden="true" />03 / THE LEGACY</span><span className="legacy-chapter-rule" aria-hidden="true" /><span className="legacy-chapter-motto">EXCELLENCE, ERA AFTER ERA.</span></div>
+        <div className="legacy-scene">
+          <span className="legacy-number" aria-hidden="true">7</span>
+          <div className="legacy-portrait"><img src="/images/legacy.png" alt="Lewis Hamilton looking upward toward the camera in his Mercedes racing suit, holding his helmet" width="736" height="1308" loading="lazy" decoding="async" /></div>
+          <div className="legacy-intro">
+            <p className="legacy-label">THE RECORD. THE STANDARD.</p>
+            <h2 id="stats-heading" className="legacy-headline"><span><span>BUILT TO</span></span><span><span>REDEFINE</span></span><span><span>GREATNESS.</span></span></h2>
+            <p className="legacy-deck">A legacy measured in moments.</p>
+            <p className="legacy-description">Every title. Every pole. Every defining drive.<br />Explore the numbers behind an extraordinary career.</p>
+            <a className="legacy-records-link" href="#legacy-records">Explore the records <span aria-hidden="true">→</span></a>
           </div>
-
-          <p className="section-subtitle">
-            Every entry corresponds to verified FIA classification data. Hamilton holds or shares
-            almost every major statistical benchmark in modern Grand Prix racing history.
-          </p>
         </div>
-
-        {/* Detailed Metrics Grid */}
-        <div className="detailed-metrics-grid">
-          {DETAILED_CAREER_STATS.map((metric) => (
-            <div key={metric.label} className="glass-card metric-card">
-              <span className="metric-value font-mono">{metric.value}</span>
-              <h3 className="metric-label">{metric.label}</h3>
-              <p className="metric-detail">{metric.detail}</p>
-            </div>
+        <dl className="legacy-records" aria-label="Career totals through December 2024">
+          {QUICK_STATS.map((record, index) => (
+            <div className="legacy-record" key={record.label}><dt>{recordLabels[index]}</dt><dd>{record.value}</dd></div>
           ))}
-        </div>
-
-        {/* Era-by-Era Breakdown Tab System */}
-        <div className="era-breakdown-card glass-card">
-          <div className="era-header-flex">
-            <div>
-              <span className="section-badge rose">Team Chapter Analysis</span>
-              <h3 className="era-title">Career Production By Team Partnership</h3>
-            </div>
-
-            {/* Era Tabs */}
-            <div className="era-tabs-list" role="tablist" aria-label="Era breakdown tabs">
-              {ERA_BREAKDOWN.map((era) => (
-                <button
-                  key={era.id}
-                  role="tab"
-                  aria-selected={selectedEra === era.id}
-                  aria-controls={`era-panel-${era.id}`}
-                  id={`era-tab-${era.id}`}
-                  type="button"
-                  className={`era-tab-btn ${selectedEra === era.id ? 'active' : ''}`}
-                  onClick={() => setSelectedEra(era.id)}
-                >
-                  {era.name.split(' ')[0]}
-                </button>
+        </dl>
+        <p className="legacy-snapshot">Career records as of December 2024</p>
+        <div className="legacy-eras">
+          <div className="legacy-era-header">
+            <p className="legacy-label">THE CHAPTERS OF GREATNESS</p>
+            <div className="legacy-tabs" role="tablist" aria-label="Explore career team eras">
+              {eraIds.map((id, index) => (
+                <button key={id} ref={el => { tabRefs.current[index] = el; }} type="button" role="tab" id={`legacy-tab-${id}`} aria-controls="legacy-era-panel" aria-selected={selectedEra === id} tabIndex={selectedEra === id ? 0 : -1} onClick={() => setSelectedEra(id)} onKeyDown={event => navigateTabs(event, index)}>{eraLabels[id]}</button>
               ))}
             </div>
           </div>
-
-          {/* Active Era Panel */}
-          <div
-            id={`era-panel-${activeEraData.id}`}
-            role="tabpanel"
-            aria-labelledby={`era-tab-${activeEraData.id}`}
-            className="era-panel-content"
-          >
-            <div className="era-panel-intro">
-              <div>
-                <h4 className="era-headline">{activeEraData.name}</h4>
-                <span className="era-years-badge font-mono">{activeEraData.years}</span>
-              </div>
-              <p className="era-description">{activeEraData.description}</p>
-            </div>
-
-            <div className="era-metrics-row">
-              <div className="era-metric-box">
-                <span className="era-metric-num">{activeEraData.championships}</span>
-                <span className="era-metric-title">World Titles</span>
-              </div>
-              <div className="era-metric-box">
-                <span className="era-metric-num">{activeEraData.wins}</span>
-                <span className="era-metric-title">Race Wins</span>
-              </div>
-              <div className="era-metric-box">
-                <span className="era-metric-num">{activeEraData.poles}</span>
-                <span className="era-metric-title">Pole Positions</span>
-              </div>
-              <div className="era-metric-box">
-                <span className="era-metric-num">{activeEraData.podiums}</span>
-                <span className="era-metric-title">Podiums</span>
-              </div>
-              <div className="era-metric-box">
-                <span className="era-metric-num">{activeEraData.races}</span>
-                <span className="era-metric-title">Races Started</span>
-              </div>
-            </div>
+          <div key={selectedEra} id="legacy-era-panel" className="legacy-era-panel" role="tabpanel" aria-labelledby={`legacy-tab-${selectedEra}`} tabIndex={0}>
+            <div className="legacy-era-title"><h3>{selectedEra === 'mercedes' ? 'Mercedes-AMG' : eraLabels[selectedEra]}</h3><p>{selectedEra === 'ferrari' ? 'A new chapter · 2025' : activeEra.years}</p></div>
+            {selectedEra === 'ferrari' ? (
+              <p className="legacy-ferrari-note">The next chapter begins in Maranello. This December 2024 record snapshot predates his Ferrari debut.</p>
+            ) : (
+              <dl className="legacy-era-metrics">
+                {[[activeEra.championships, 'Titles'], [activeEra.wins, 'Wins'], [activeEra.poles, 'Poles'], [activeEra.podiums, 'Podiums']].map(([value, label]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+              </dl>
+            )}
+            <p className="legacy-era-description">{activeEra.description}</p>
+            {selectedEra !== 'ferrari' && <p className="legacy-era-starts">{activeEra.races} Grands Prix started during this era.</p>}
           </div>
-
-          <div className="era-footer-note">
-            <span className="info-icon" aria-hidden="true">ℹ</span>
-            <span>
-              Sources: Official FIA Formula One World Championship annual archives &middot;
-              Mercedes-AMG won 8 consecutive Constructors&rsquo; Titles (2014&ndash;2021) with Hamilton as lead driver.
-            </span>
-          </div>
+        </div>
+        <div id="legacy-records" className="legacy-details" aria-labelledby="legacy-records-heading">
+          <div className="legacy-details-heading"><p className="legacy-label">BEYOND THE HEADLINES</p><h3 id="legacy-records-heading">The detail behind the dominance.</h3></div>
+          <dl className="legacy-detail-grid">
+            {DETAILED_CAREER_STATS.map(metric => <div key={metric.label} className="legacy-detail"><dt>{metric.label}</dt><dd>{metric.value}</dd><dd className="legacy-detail-caption">{metric.detail}</dd></div>)}
+          </dl>
+          <p className="legacy-source-note">Archive snapshot: {STATS_VERIFICATION_DATE}. Sources: FIA annual classifications and Formula 1 driver archives. <a href="#sources">View sources <span aria-hidden="true">↗</span></a></p>
         </div>
       </div>
     </section>
   );
-};
+}
