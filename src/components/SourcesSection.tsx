@@ -1,87 +1,15 @@
-import React from 'react';
 import { SOURCES_AND_ATTRIBUTION, STATS_VERIFICATION_DATE } from '../data/portfolioData';
+import { useCinemaReveal } from '../hooks/useCinemaReveal';
+import './CinemaArchive.css';
 
-export const SourcesSection: React.FC = () => {
-  return (
-    <section id="sources" className="sources-section" aria-labelledby="sources-heading">
-      <div className="container">
-        <div className="section-header">
-          <span className="section-badge rose">Factual Transparency</span>
-          <h2 id="sources-heading" className="section-title">
-            Data Sources, Verification &amp; Attribution
-          </h2>
-          <p className="section-subtitle">
-            To uphold rigorous journalistic and engineering integrity, all statistical tallies,
-            quotes, and timeline entries are linked to official, public records.
-          </p>
-        </div>
-
-        <div className="sources-grid">
-          {/* Factual Sources List */}
-          <div className="glass-card sources-list-card">
-            <h3 className="sources-box-title">Verified Authoritative Sources</h3>
-            <p className="sources-box-desc">
-              All quantitative metrics are verified as of <strong>{STATS_VERIFICATION_DATE}</strong>.
-            </p>
-
-            <ul className="sources-items-list">
-              {SOURCES_AND_ATTRIBUTION.map((source) => (
-                <li key={source.title} className="source-list-item">
-                  <div className="source-info">
-                    <a
-                      href={source.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="source-title-link"
-                      aria-label={`${source.title} (opens in a new tab)`}
-                    >
-                      <span>{source.title}</span>
-                      <span className="external-arrow" aria-hidden="true">&#8599;</span>
-                      <span className="sr-only">(opens in a new tab)</span>
-                    </a>
-                    <p className="source-item-desc">{source.description}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Media Attribution & Unverified Clarifications */}
-          <div className="glass-card attribution-card">
-            <h3 className="sources-box-title">Media Attribution &amp; Unverified Items</h3>
-            
-            <div className="attribution-content">
-              <div className="attribution-block">
-                <h4 className="attribution-subtitle">Visual Content Copyright</h4>
-                <p>
-                  Imagery featured across this fan archival project represents editorial photography 
-                  credited to Formula 1 Media, Mercedes-AMG Petronas Motorsport, Scuderia Ferrari HP, 
-                  and associated sporting press photographers. Imagery is utilized strictly under 
-                  non-commercial, transformative educational fair-use principles.
-                </p>
-              </div>
-
-              <div className="attribution-block">
-                <h4 className="attribution-subtitle">Audit of Quotations &amp; Claims</h4>
-                <p>
-                  All quotes featured in this portfolio were corroborated against published FIA post-race 
-                  press conferences or broadcast audio. Fabricated internet memes or unsourced quotes 
-                  have been deliberately omitted.
-                </p>
-              </div>
-
-              <div className="attribution-block verification-status">
-                <span className="status-indicator" aria-hidden="true">&#9679;</span>
-                <p>
-                  <strong>Unverified Future Projections:</strong> Any speculative performance forecasts 
-                  regarding upcoming Scuderia Ferrari race results remain unverified until official FIA 
-                  Grand Prix timing sessions conclude.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
+export function SourcesSection() {
+  const ref = useCinemaReveal();
+  return <section ref={ref} id="sources" className="sources-section cinema-sources" aria-labelledby="sources-heading"><div className="archive-shell">
+    <div className="archive-chapter"><span><i aria-hidden="true" />07 / THE REFERENCE ROOM</span><span className="archive-rule" aria-hidden="true" /><span className="archive-motto">CONTEXT BEHIND THE COLLECTION.</span></div>
+    <div className="sources-heading" data-cinema-reveal><h2 id="sources-heading" className="archive-display">THE STORY.<br /><span>THE SOURCES.</span></h2><p className="archive-copy">Follow the references behind the racing records, career chapters and work beyond the track. An independent fan archive, with its historical context kept in view.</p></div>
+    <div className="sources-layout"><aside className="sources-snapshot" data-cinema-reveal><p className="archive-micro">THE RECORD SNAPSHOT</p><strong>2024</strong><span>DECEMBER / END OF SEASON</span><p>Historical career totals. This collection is a snapshot, rather than a live results feed.</p><details><summary>Snapshot context</summary><p>{STATS_VERIFICATION_DATE}</p></details></aside>
+      <ol className="reference-index">{SOURCES_AND_ATTRIBUTION.map((source, index) => <li key={source.title} data-cinema-reveal><a href={source.url} target="_blank" rel="noopener noreferrer" aria-label={`${source.title} (opens in a new tab)`}><span className="reference-number">0{index + 1}</span><span className="reference-body"><span className="archive-micro">{new URL(source.url).hostname.replace('www.', '')}</span><strong>{source.title}</strong><span className="reference-description">{source.description}</span></span><span className="reference-arrow" aria-hidden="true">↗</span></a></li>)}</ol>
+    </div>
+    <div className="sources-notes"><details><summary>About the imagery <span aria-hidden="true">+</span></summary><p>The gallery distinguishes supplied driver imagery from the artistic GOAT interpretation used in this fan portfolio. Image labels describe what is shown; team logos and third-party imagery belong to their respective owners.</p></details><details><summary>Reading the archive <span aria-hidden="true">+</span></summary><p>Career records retain their December 2024 snapshot date. Ferrari is presented as a subsequent career chapter. Source links lead to the organizations and archives listed in this collection; they are not live statistical updates.</p></details></div>
+  </div></section>;
+}
