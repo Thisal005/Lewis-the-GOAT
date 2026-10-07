@@ -5,12 +5,18 @@ import './CareerStatsSection.css';
 const eraIds = ['mclaren', 'mercedes', 'ferrari'];
 const eraLabels: Record<string, string> = { mclaren: 'McLaren', mercedes: 'Mercedes', ferrari: 'Ferrari' };
 const recordLabels = ['World titles', 'Grand Prix wins', 'Pole positions', 'Podium finishes'];
+const eraArtwork: Record<string, { src: string; width: number; height: number; chapter: string }> = {
+  mclaren: { src: '/images/mcl.png', width: 1340, height: 2400, chapter: '01 / THE BREAKTHROUGH' },
+  mercedes: { src: '/images/mb.png', width: 675, height: 1200, chapter: '02 / THE DYNASTY' },
+  ferrari: { src: '/images/frr.png', width: 1340, height: 2400, chapter: '03 / THE NEXT CHAPTER' },
+};
 
 export function CareerStatsSection() {
   const [selectedEra, setSelectedEra] = useState('mercedes');
   const sectionRef = useRef<HTMLElement>(null);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const activeEra = ERA_BREAKDOWN.find(era => era.id === selectedEra) ?? ERA_BREAKDOWN[0];
+  const artwork = eraArtwork[selectedEra];
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -96,6 +102,71 @@ export function CareerStatsSection() {
     };
   }, []);
 
+  useEffect(() => {
+    const panel = sectionRef.current?.querySelector<HTMLElement>('.legacy-era-showcase');
+    const art = panel?.querySelector<HTMLElement>('.legacy-team-art');
+    if (!panel || !art) return;
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const pointer = window.matchMedia('(hover: hover) and (pointer: fine)');
+    let frame: number | null = null;
+    let pointerFrame: number | null = null;
+    let visible = false;
+    const update = () => {
+      frame = null;
+      const bounds = art.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, (innerHeight - bounds.top) / (innerHeight + bounds.height)));
+      const depth = motion.matches ? 0 : (progress - .5) * 2;
+      panel.style.setProperty('--team-scroll-y', `${depth * (innerWidth <= 700 ? 8 : 16)}px`);
+      panel.style.setProperty('--team-year-y', `${-depth * 22}px`);
+      panel.style.setProperty('--team-scroll-scale', String(1 + Math.max(0, depth) * .015));
+    };
+    const schedule = () => { if (visible && !document.hidden && frame === null) frame = requestAnimationFrame(update); };
+    const resetPointer = () => {
+      if (pointerFrame !== null) cancelAnimationFrame(pointerFrame);
+      pointerFrame = null;
+      panel.style.setProperty('--team-pointer-x', '0px');
+      panel.style.setProperty('--team-pointer-y', '0px');
+      panel.style.setProperty('--team-light-opacity', '0');
+    };
+    const move = (event: PointerEvent) => {
+      if (motion.matches || !pointer.matches || event.pointerType !== 'mouse') return;
+      if (pointerFrame !== null) cancelAnimationFrame(pointerFrame);
+      pointerFrame = requestAnimationFrame(() => {
+        pointerFrame = null;
+        const bounds = art.getBoundingClientRect();
+        const x = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
+        const y = Math.max(0, Math.min(1, (event.clientY - bounds.top) / bounds.height));
+        panel.style.setProperty('--team-pointer-x', `${(x - .5) * 8}px`);
+        panel.style.setProperty('--team-pointer-y', `${(y - .5) * 6}px`);
+        panel.style.setProperty('--team-light-x', `${x * 100}%`);
+        panel.style.setProperty('--team-light-y', `${y * 100}%`);
+        panel.style.setProperty('--team-light-opacity', '1');
+      });
+    };
+    const changeMotion = () => { resetPointer(); update(); };
+    const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; schedule(); });
+    observer.observe(art);
+    art.addEventListener('pointermove', move);
+    art.addEventListener('pointerleave', resetPointer);
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    document.addEventListener('visibilitychange', schedule);
+    motion.addEventListener('change', changeMotion);
+    pointer.addEventListener('change', resetPointer);
+    return () => {
+      observer.disconnect();
+      resetPointer();
+      if (frame !== null) cancelAnimationFrame(frame);
+      art.removeEventListener('pointermove', move);
+      art.removeEventListener('pointerleave', resetPointer);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+      document.removeEventListener('visibilitychange', schedule);
+      motion.removeEventListener('change', changeMotion);
+      pointer.removeEventListener('change', resetPointer);
+    };
+  }, [selectedEra]);
+
   const navigateTabs = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     let next = index;
     if (event.key === 'ArrowRight') next = (index + 1) % eraIds.length;
@@ -139,8 +210,11 @@ export function CareerStatsSection() {
               ))}
             </div>
           </div>
-          <div key={selectedEra} id="legacy-era-panel" className="legacy-era-panel" role="tabpanel" aria-labelledby={`legacy-tab-${selectedEra}`} tabIndex={0}>
-            <div className="legacy-era-title"><h3>{selectedEra === 'mercedes' ? 'Mercedes-AMG' : eraLabels[selectedEra]}</h3><p>{selectedEra === 'ferrari' ? 'A new chapter · 2025' : activeEra.years}</p></div>
+          <div key={selectedEra} id="legacy-era-panel" className="legacy-era-panel legacy-era-showcase" data-era={selectedEra} role="tabpanel" aria-labelledby={`legacy-tab-${selectedEra}`} tabIndex={0}>
+            <div className="legacy-era-story">
+            <p className="legacy-team-chapter">{artwork.chapter}</p>
+            <div className="legacy-era-title"><h3><span>{selectedEra === 'mercedes' ? 'Mercedes-AMG' : eraLabels[selectedEra]}</span></h3><p>{selectedEra === 'ferrari' ? 'A new chapter · 2025' : activeEra.years}</p></div>
+            <p className="legacy-era-description">{activeEra.description}</p>
             {selectedEra === 'ferrari' ? (
               <p className="legacy-ferrari-note">The next chapter begins in Maranello. This December 2024 record snapshot predates his Ferrari debut.</p>
             ) : (
@@ -148,8 +222,15 @@ export function CareerStatsSection() {
                 {[[activeEra.championships, 'Titles'], [activeEra.wins, 'Wins'], [activeEra.poles, 'Poles'], [activeEra.podiums, 'Podiums']].map(([value, label]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
               </dl>
             )}
-            <p className="legacy-era-description">{activeEra.description}</p>
             {selectedEra !== 'ferrari' && <p className="legacy-era-starts">{activeEra.races} Grands Prix started during this era.</p>}
+            </div>
+            <div className="legacy-team-art">
+              <span className="legacy-team-year" aria-hidden="true">{selectedEra === 'mclaren' ? '2007' : selectedEra === 'mercedes' ? '2013' : '2025'}</span>
+              <div className="legacy-team-portrait">
+                {eraIds.map(id => <img key={id} src={eraArtwork[id].src} width={eraArtwork[id].width} height={eraArtwork[id].height} hidden={selectedEra !== id} alt={selectedEra === id ? `Lewis Hamilton wearing his ${eraLabels[id]} racing suit and helmet` : ''} decoding="async" />)}
+              </div>
+              <span className="legacy-team-caption">{eraLabels[selectedEra]} / {selectedEra === 'ferrari' ? 'THE NEXT CHAPTER' : activeEra.years}</span>
+            </div>
           </div>
         </div>
         <div id="legacy-records" className="legacy-details" aria-labelledby="legacy-records-heading">
