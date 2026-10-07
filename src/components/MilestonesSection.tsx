@@ -7,7 +7,16 @@ const filters: FilterType[] = ['All', 'Championship', 'Historic Win', 'Career Mo
 const archiveArt = {
   drive: { src: '/images/car1.png', width: 736, height: 920, alt: 'Mercedes Formula 1 car, front three-quarter view', label: 'THE DRIVE' },
   victory: { src: '/images/win.png', width: 736, height: 1102, alt: 'Lewis Hamilton celebrating with a trophy and the British flag', label: 'THE MOMENTS' },
-  future: { src: '/images/lh2.png', width: 736, height: 1308, alt: 'Lewis Hamilton seen from behind in his Ferrari racing suit', label: 'THE NEXT CHAPTER' },
+  debut: { src: '/images/2007.png', width: 1340, height: 2400, alt: 'Lewis Hamilton with folded arms in his McLaren racing suit', label: 'THE FIRST CHAPTER' },
+  firstTitle: { src: '/images/2008.png', width: 1340, height: 2400, alt: 'Lewis Hamilton holding a trophy in his McLaren racing suit', label: 'THE FIRST TITLE' },
+  silverTitles: { src: '/images/2014.png', width: 1340, height: 2400, alt: 'Lewis Hamilton kissing a trophy in his silver Mercedes racing suit', label: 'THE SILVER CHAPTER' },
+  dominance: { src: '/images/2017.png', width: 1340, height: 2400, alt: 'Lewis Hamilton smiling while embracing a trophy in his Mercedes racing suit', label: 'THE CHAMPIONSHIP YEARS' },
+  records: { src: '/images/2020.png', width: 475, height: 770, alt: 'Lewis Hamilton facing forward in his black Mercedes racing suit', label: 'REDEFINING THE LIMIT' },
+  future: { src: '/images/present.png', width: 1340, height: 2400, alt: 'Lewis Hamilton adjusting his yellow helmet in his Ferrari racing suit', label: 'THE NEXT CHAPTER' },
+};
+const chapterArt: Record<string, keyof typeof archiveArt> = {
+  '2007': 'debut', '2008': 'firstTitle', '2013': 'drive', '2014 – 2015': 'silverTitles',
+  '2017 – 2020': 'dominance', '2020 – 2021': 'records', '2024': 'victory', '2025 – Present': 'future',
 };
 
 export function MilestonesSection() {
@@ -16,7 +25,7 @@ export function MilestonesSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const filteredMilestones = activeFilter === 'All' ? CAREER_MILESTONES : CAREER_MILESTONES.filter(m => m.category === activeFilter);
   const current = filteredMilestones[activeIndex] ?? filteredMilestones[0];
-  const artId = current.team === 'Scuderia Ferrari' ? 'future' : current.category === 'Championship' || current.category === 'Historic Win' ? 'victory' : 'drive';
+  const artId = chapterArt[current.year];
   const artwork = archiveArt[artId];
 
   useEffect(() => {
@@ -105,7 +114,7 @@ export function MilestonesSection() {
               <div key={artId} className="journey-archive-art" data-art={artId}>
                 <div className="journey-archive-portrait">{Object.entries(archiveArt).map(([id, art]) => <img key={id} src={art.src} width={art.width} height={art.height} hidden={artId !== id} alt={artId === id ? art.alt : ''} decoding="async" />)}</div>
               </div>
-              <p className="journey-companion-team">{artId === 'drive' ? 'MERCEDES / ON TRACK' : artId === 'victory' ? 'THE PURSUIT OF VICTORY' : 'SCUDERIA FERRARI / A NEW CHAPTER'}</p><p className="journey-companion-caption">Driven by belief. Defined by the moments.</p>
+              <p className="journey-companion-team">{artId === 'drive' ? 'MERCEDES / ON TRACK' : current.team}</p><p className="journey-companion-caption">Driven by belief. Defined by the moments.</p>
             </aside>
             <ol className="journey-timeline" aria-label="Career milestones in chronological order">
               {filteredMilestones.map((milestone, index) => (
@@ -116,7 +125,7 @@ export function MilestonesSection() {
                     <p className="journey-moment-team">{milestone.team}</p>
                     <h4 id={`journey-title-${CAREER_MILESTONES.indexOf(milestone)}`}>{milestone.title}</h4>
                     <p className="journey-moment-summary">{milestone.summary}</p>
-                    {(milestone.year === '2013' || milestone.year === '2024') && <div className={milestone.year === '2024' ? 'journey-inline-art journey-inline-victory' : 'journey-inline-art journey-inline-car'}><img src={milestone.year === '2024' ? '/images/win.png' : '/images/car1.png'} width="736" height={milestone.year === '2024' ? '1102' : '920'} alt={milestone.year === '2024' ? archiveArt.victory.alt : archiveArt.drive.alt} loading="lazy" decoding="async" /></div>}
+                    <div data-art={chapterArt[milestone.year]} className={`journey-inline-art ${milestone.year === '2013' ? 'journey-inline-car' : milestone.year === '2024' ? 'journey-inline-victory' : 'journey-inline-portrait'}`}><img src={archiveArt[chapterArt[milestone.year]].src} width={archiveArt[chapterArt[milestone.year]].width} height={archiveArt[chapterArt[milestone.year]].height} alt={archiveArt[chapterArt[milestone.year]].alt} loading="lazy" decoding="async" /></div>
                     <details className="journey-moment-details"><summary>Inside the moment <span aria-hidden="true">+</span></summary><p>{milestone.details}</p></details>
                   </article>
                 </li>
