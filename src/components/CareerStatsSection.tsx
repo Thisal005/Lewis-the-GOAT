@@ -17,7 +17,10 @@ export function CareerStatsSection() {
     const scene = section?.querySelector<HTMLElement>('.legacy-scene');
     if (!section || !scene) return;
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const pointerPreference = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const records = section.querySelector<HTMLElement>('.legacy-records');
     let frame: number | null = null;
+    let pointerFrame: number | null = null;
     let visible = false;
     const update = () => {
       frame = null;
@@ -28,6 +31,13 @@ export function CareerStatsSection() {
       section.style.setProperty('--legacy-portrait-y', `${depth * (mobile ? 10 : 30)}px`);
       section.style.setProperty('--legacy-title-y', `${-depth * (mobile ? 6 : 20)}px`);
       section.style.setProperty('--legacy-number-y', `${-depth * (mobile ? 12 : 50)}px`);
+      section.style.setProperty('--legacy-title-scale', String(1 - Math.max(0, depth) * (mobile ? .005 : .025)));
+      section.style.setProperty('--legacy-portrait-scale', String(1 + Math.max(0, depth) * (mobile ? .01 : .025)));
+      section.style.setProperty('--legacy-haze-scale', String(1 + Math.abs(depth) * .12));
+      if (records) {
+        const track = records.getBoundingClientRect();
+        records.style.setProperty('--legacy-record-progress', String(motion.matches ? 1 : Math.max(0, Math.min(1, (window.innerHeight * .85 - track.top) / (window.innerHeight * .4)))));
+      }
     };
     const schedule = () => { if (visible && !document.hidden && frame === null) frame = requestAnimationFrame(update); };
     const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; schedule(); });
@@ -40,18 +50,48 @@ export function CareerStatsSection() {
         }
       });
     }, { threshold: .15 });
-    section.querySelectorAll('.legacy-headline, .legacy-deck, .legacy-description, .legacy-record, .legacy-eras, .legacy-detail').forEach(el => revealObserver.observe(el));
+    section.querySelectorAll('.legacy-headline, .legacy-deck, .legacy-description, .legacy-records-link, .legacy-record, .legacy-eras, .legacy-details-heading, .legacy-detail').forEach(el => revealObserver.observe(el));
+    const resetPointer = () => {
+      if (pointerFrame !== null) cancelAnimationFrame(pointerFrame);
+      pointerFrame = null;
+      scene.style.setProperty('--legacy-pointer-x', '0px');
+      scene.style.setProperty('--legacy-pointer-y', '0px');
+      scene.style.setProperty('--legacy-light-opacity', '0');
+    };
+    const movePointer = (event: PointerEvent) => {
+      if (motion.matches || !pointerPreference.matches || event.pointerType !== 'mouse') return;
+      if (pointerFrame !== null) cancelAnimationFrame(pointerFrame);
+      pointerFrame = requestAnimationFrame(() => {
+        pointerFrame = null;
+        const bounds = scene.getBoundingClientRect();
+        const x = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
+        const y = Math.max(0, Math.min(1, (event.clientY - bounds.top) / bounds.height));
+        scene.style.setProperty('--legacy-pointer-x', `${(x - .5) * 10}px`);
+        scene.style.setProperty('--legacy-pointer-y', `${(y - .5) * 8}px`);
+        scene.style.setProperty('--legacy-light-x', `${x * 100}%`);
+        scene.style.setProperty('--legacy-light-y', `${y * 100}%`);
+        scene.style.setProperty('--legacy-light-opacity', '1');
+      });
+    };
+    const changeMotion = () => { resetPointer(); update(); };
+    scene.addEventListener('pointermove', movePointer);
+    scene.addEventListener('pointerleave', resetPointer);
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', schedule);
     document.addEventListener('visibilitychange', schedule);
-    motion.addEventListener('change', update);
+    motion.addEventListener('change', changeMotion);
+    pointerPreference.addEventListener('change', resetPointer);
     return () => {
       observer.disconnect();
       revealObserver.disconnect();
+      resetPointer();
+      scene.removeEventListener('pointermove', movePointer);
+      scene.removeEventListener('pointerleave', resetPointer);
       window.removeEventListener('scroll', schedule);
       window.removeEventListener('resize', schedule);
       document.removeEventListener('visibilitychange', schedule);
-      motion.removeEventListener('change', update);
+      motion.removeEventListener('change', changeMotion);
+      pointerPreference.removeEventListener('change', resetPointer);
       if (frame !== null) cancelAnimationFrame(frame);
     };
   }, []);
@@ -89,7 +129,7 @@ export function CareerStatsSection() {
             <div className="legacy-record" key={record.label}><dt>{recordLabels[index]}</dt><dd>{record.value}</dd></div>
           ))}
         </dl>
-        <p className="legacy-snapshot">Career records as of December 2024</p>
+        <p className="legacy-snapshot" style={{ paddingTop: '2rem' }}>Career records as of December 2024</p>
         <div className="legacy-eras">
           <div className="legacy-era-header">
             <p className="legacy-label">THE CHAPTERS OF GREATNESS</p>

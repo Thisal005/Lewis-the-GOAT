@@ -68,7 +68,7 @@
 @keyframes legacy-line-in { from { transform: translateY(105%) rotate(2deg); } to { transform: translateY(0); } }
 @keyframes legacy-passage-in { from { opacity: .2; translate: 0 18px; } to { opacity: 1; translate: 0 0; } }
 @media (prefers-reduced-motion: no-preference) {
-  .cinematic-legacy [data-revealed='true']:not(.legacy-headline), .legacy-era-panel { animation: legacy-passage-in 800ms cubic-bezier(.16, 1, .3, 1) both; }
+  .cinematic-legacy [data-revealed='true']:not(.legacy-headline), .legacy-era-panel { animation: legacy-passage-in 800ms cubic-bezier(.16, 1, .3, 1) var(--legacy-reveal-delay, 0ms) both; }
   .legacy-headline[data-revealed='true'] > span > span { animation: legacy-line-in 950ms cubic-bezier(.16, 1, .3, 1) both; }
   .legacy-headline > span:nth-child(2) > span { animation-delay: 120ms; }
   .legacy-headline > span:nth-child(3) > span { animation-delay: 240ms; }
@@ -121,4 +121,39 @@
 @media (prefers-reduced-motion: reduce) {
   .cinematic-legacy *, .cinematic-legacy *::before, .cinematic-legacy *::after { animation: none !important; transition: none !important; }
   .legacy-headline, .legacy-portrait, .legacy-number { transform: none; }
+}
+
+/* Match About's layered depth, pointer light and restrained editorial accents. */
+.legacy-scene::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 340px 280px at var(--legacy-light-x, 30%) var(--legacy-light-y, 45%), #e624401a, transparent); opacity: var(--legacy-light-opacity, 0); transition: opacity 700ms ease; }
+.legacy-scene::after { content: ''; position: absolute; z-index: -1; inset: -5% 0; pointer-events: none; background: radial-gradient(ellipse at 25% 45%, #c3213526, transparent 60%); transform: scale(var(--legacy-haze-scale, 1)); }
+.legacy-headline { transform: translateY(var(--legacy-title-y, 0px)) scale(var(--legacy-title-scale, 1)); transform-origin: left center; }
+.legacy-portrait { transform: translateY(var(--legacy-portrait-y, 0px)) scale(var(--legacy-portrait-scale, 1)); transform-origin: center bottom; }
+.legacy-portrait img { transform: translate(var(--legacy-pointer-x, 0px), var(--legacy-pointer-y, 0px)); transition: transform 700ms cubic-bezier(.16, 1, .3, 1), filter 700ms ease; }
+.legacy-records { position: relative; }
+.legacy-records::before { content: ''; position: absolute; inset: auto 0 -8px; height: 1px; background: var(--legacy-yellow); transform: scaleX(var(--legacy-record-progress, 0)); transform-origin: left; opacity: .45; pointer-events: none; }
+.legacy-record dd { transition: color 350ms ease, transform 350ms ease; }
+.legacy-record::after { content: ''; position: absolute; bottom: -8px; left: 15%; right: 15%; height: 1px; background: var(--legacy-yellow); transform: scaleX(0); transform-origin: center; transition: transform 450ms cubic-bezier(.16, 1, .3, 1); }
+.legacy-era-metrics dd, .legacy-detail > dd:not(.legacy-detail-caption) { transition: color 350ms ease; }
+.legacy-tabs button:focus-visible::after { transform: scaleX(1); }
+.legacy-source-note a:is(:hover, :focus-visible) { color: var(--legacy-yellow); }
+@media (prefers-reduced-motion: no-preference) {
+  .legacy-record:nth-child(2) { --legacy-reveal-delay: 80ms; }
+  .legacy-record:nth-child(3) { --legacy-reveal-delay: 160ms; }
+  .legacy-record:nth-child(4) { --legacy-reveal-delay: 240ms; }
+  .legacy-detail:nth-child(4n + 2) { --legacy-reveal-delay: 70ms; }
+  .legacy-detail:nth-child(4n + 3) { --legacy-reveal-delay: 140ms; }
+  .legacy-detail:nth-child(4n + 4) { --legacy-reveal-delay: 210ms; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .legacy-portrait:hover img { filter: brightness(1.08) contrast(1.03); }
+  .legacy-record:hover dd { transform: translateY(-3px); }
+  .legacy-record:hover::after { transform: scaleX(1); }
+  .legacy-era-metrics > div:hover dd, .legacy-detail:hover > dd:not(.legacy-detail-caption) { color: var(--legacy-yellow); }
+  .legacy-tabs button:hover::after { transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .legacy-headline, .legacy-portrait, .legacy-portrait img, .legacy-scene::after { transform: none; }
+  .legacy-scene::before { display: none; }
+  .legacy-records::before { transform: none; }
+  .legacy-record:hover dd { transform: none; }
 }
