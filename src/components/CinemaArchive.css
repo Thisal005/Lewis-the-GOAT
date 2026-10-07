@@ -25,20 +25,28 @@
 .collection-frame { grid-column: span 4; min-width: 0; }
 .collection-frame:nth-child(1) { grid-column: span 7; }
 .collection-frame:nth-child(2) { grid-column: span 5; }
-.collection-frame:last-child:nth-child(6) { grid-column: 1 / -1; }
+.collection-frame[data-image='goat-art'] { grid-column: 1 / -1; }
 .collection-grid.is-filtered .collection-frame { grid-column: span 6; }
 .collection-trigger { width: 100%; display: block; text-align: left; color: var(--text-primary); }
 .collection-image { position: relative; isolation: isolate; overflow: hidden; height: 370px; background: radial-gradient(ellipse at 50% 50%, #76203955, transparent 75%), #1b0b10; }
 .collection-frame:nth-child(-n+2) .collection-image { height: 530px; }
-.collection-frame:last-child:nth-child(6) .collection-image { height: 360px; background: radial-gradient(ellipse at 70% 50%, #a9163540, transparent 65%), #1b0b10; }
+.collection-frame[data-image='goat-art'] .collection-image { height: 360px; background: radial-gradient(ellipse at 70% 50%, #a9163540, transparent 65%), #1b0b10; }
 .collection-image img, .cinema-lightbox-stage img { position: absolute; left: 50%; bottom: 0; max-width: none; width: auto; height: var(--collection-image-height, 105%); transform: translateX(-50%); transition: filter 600ms ease, scale 800ms cubic-bezier(.16, 1, .3, 1); transform-origin: center bottom; }
 [data-image='scarlet'] { --collection-image-height: 160%; }
 [data-image='victory'] { --collection-image-height: 105%; }
 [data-image='mercedes'] { --collection-image-height: 166.67%; }
-[data-image='mclaren'] { --collection-image-height: 130.44%; }
+[data-image='mclaren'] { --collection-image-height: 150%; }
 [data-image='identity'] { --collection-image-height: 145%; }
 [data-image='goat-art'] { --collection-image-height: 102%; }
-.collection-frame:last-child:nth-child(6) img { left: 72%; }
+.collection-frame[data-image='goat-art'] img { left: 72%; }
+[data-image='ferrari-machine'] { --collection-image-height: 125%; }
+[data-image='ferrari-machine'] img { bottom: -25%; }
+[data-image='ferrari-detail'] img { height: auto; width: 115%; bottom: auto; top: 50%; transform: translate(-50%, -50%); }
+[data-image='ferrari-identity'] img { height: 100%; width: 100%; object-fit: cover; object-position: center; }
+.collection-team-identity { display: flex; align-items: center; justify-content: space-between; gap: 30px; border-top: 1px solid #fff5e526; margin-top: 50px; padding-top: 30px; }
+.collection-team-identity p { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 30px; margin-top: 10px; }
+.collection-team-logo { position: relative; width: 350px; height: 125px; overflow: hidden; background: white; flex-shrink: 0; }
+.collection-team-logo img { position: absolute; width: 100%; top: 50%; transform: translateY(-50%); }
 .collection-bg-word { position: absolute; z-index: -1; top: 20%; left: 5%; font-family: 'Anton', Impact, sans-serif; font-size: clamp(80px, 10vw, 150px); line-height: 1; color: #fff5e50c; }
 .collection-frame-number { position: absolute; z-index: 2; top: 20px; left: 20px; font-size: 11px; letter-spacing: .1em; }
 .collection-open { position: absolute; z-index: 2; bottom: 18px; right: 18px; font-size: 10px; letter-spacing: .15em; background: #100507d9; padding: 10px 13px; }
@@ -98,6 +106,12 @@
 .impact-venture-content ul { margin-top: 0; }
 .impact-closing { font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(36px, 4.8vw, 68px); color: #241019; line-height: 1.15; text-align: center; margin-top: 70px; }
 .impact-closing em { color: #961735; }
+.impact-outro { display: grid; grid-template-columns: .8fr 1.2fr; align-items: center; gap: 50px; margin-top: 65px; border-top: 1px solid #24101933; padding-top: 30px; }
+.impact-portrait { position: relative; height: 460px; overflow: hidden; background: radial-gradient(ellipse at center, #9617351a, transparent 70%); }
+.impact-portrait img { position: absolute; bottom: 0; left: 50%; height: 150%; width: auto; max-width: none; transform: translateX(-50%); }
+.impact-outro .archive-micro { color: #961735; }
+.impact-outro .impact-closing { text-align: left; margin-top: 25px; }
+.impact-portrait-note { color: #6c545b; font-size: 11px; line-height: 1.8; margin-top: 22px; }
 .portfolio-app .cinema-sources { padding: 75px 0 80px; background: radial-gradient(ellipse at 90% 10%, #88203626, transparent 55%), #100507; }
 .sources-heading { display: grid; grid-template-columns: 1.2fr .65fr; align-items: end; gap: 65px; margin-top: 65px; }
 .sources-heading .archive-display { font-size: clamp(45px, 6.5vw, 98px); }
@@ -114,6 +128,8 @@
 .reference-number { color: #ffe000; font-size: 10px; padding-top: 5px; }
 .reference-body { flex: 1; min-width: 0; }
 .reference-body > .archive-micro { color: var(--text-muted); }
+.reference-logo { position: relative; display: block; width: 180px; height: 46px; overflow: hidden; background: white; margin-top: 16px; }
+.reference-logo img { position: absolute; width: 180px; height: 180px; top: -64px; left: 0; }
 .reference-body strong { display: block; font-family: 'Cormorant Garamond', Georgia, serif; font-size: clamp(24px, 2.3vw, 32px); font-weight: 600; line-height: 1.2; margin-top: 8px; }
 .reference-description { display: block; color: var(--text-secondary); font-size: 12px; line-height: 1.9; margin-top: 12px; }
 .reference-arrow { font-size: 24px; transition: transform 350ms ease; }
@@ -173,9 +189,11 @@
   .archive-filters { gap: 20px; }
   .archive-filters button { font-size: 11px; }
   .collection-grid { grid-template-columns: 1fr; gap: 30px; }
-  .collection-frame, .collection-frame:nth-child(1), .collection-frame:nth-child(2), .collection-frame:last-child:nth-child(6), .collection-grid.is-filtered .collection-frame { grid-column: auto; }
-  .collection-image, .collection-frame:nth-child(-n+2) .collection-image, .collection-frame:last-child:nth-child(6) .collection-image { height: 380px; }
-  .collection-frame:last-child:nth-child(6) img { left: 50%; }
+  .collection-frame, .collection-frame:nth-child(1), .collection-frame:nth-child(2), .collection-frame[data-image='goat-art'], .collection-grid.is-filtered .collection-frame { grid-column: auto; }
+  .collection-image, .collection-frame:nth-child(-n+2) .collection-image, .collection-frame[data-image='goat-art'] .collection-image { height: 380px; }
+  .collection-frame[data-image='goat-art'] img { left: 50%; }
+  .collection-team-identity { flex-direction: column; align-items: start; gap: 20px; }
+  .collection-team-logo { width: min(350px, 100%); height: 110px; }
   .collection-caption h3 { font-size: 29px; }
   .cinema-lightbox-inner { padding: 16px; }
   .cinema-lightbox-top > .archive-micro { font-size: 8px; }
@@ -188,6 +206,8 @@
   .impact-venture-year { display: none; }
   .impact-venture-content { grid-template-columns: 1fr; gap: 20px; padding-left: 0; }
   .impact-venture summary .archive-micro { font-size: 8px; letter-spacing: .1em; }
+  .impact-outro { grid-template-columns: 1fr; gap: 25px; }
+  .impact-portrait { height: 370px; }
   .sources-heading .archive-display { font-size: clamp(42px, 10.8vw, 75px); }
   .sources-layout { grid-template-columns: 1fr; gap: 35px; margin-top: 35px; }
   .sources-snapshot strong { font-size: 85px; }
