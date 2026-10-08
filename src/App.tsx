@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
+import './components/CinematicMotion.css';
+import { useChapterMotion } from './hooks/useChapterMotion';
 import { SiteNavigation } from './components/SiteNavigation';
 import { Hero } from './components/Hero';
 import { AboutSection } from './components/AboutSection';
@@ -11,6 +13,7 @@ import { SourcesSection } from './components/SourcesSection';
 import { Footer } from './components/Footer';
 
 export function App() {
+  useChapterMotion();
   const [activeSection, setActiveSection] = useState<string>('hero');
 
   // Track active section for navbar highlighting
