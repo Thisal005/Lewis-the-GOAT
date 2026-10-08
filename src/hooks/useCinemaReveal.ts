@@ -12,7 +12,10 @@ export function useCinemaReveal(revision = '') {
         observer.unobserve(entry.target);
       }
     }, { threshold: .08 });
-    root.querySelectorAll('[data-cinema-reveal]').forEach(element => observer.observe(element));
+    root.querySelectorAll<HTMLElement>('[data-cinema-reveal]').forEach((element, index) => {
+      element.style.setProperty('--cinema-stagger', `${(index % 3) * 75}ms`);
+      observer.observe(element);
+    });
     return () => observer.disconnect();
   }, [revision]);
   return ref;
