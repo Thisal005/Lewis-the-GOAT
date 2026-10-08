@@ -103,7 +103,7 @@ export const SiteNavigation: React.FC<SiteNavigationProps> = ({ activeSection = 
                     aria-current={isActive ? 'true' : undefined}
                   >
                     {link.label}
-                    {isActive && <span className="nav-active-pip" aria-hidden="true" />}
+                    <span className="nav-active-pip" aria-hidden="true" />
                   </a>
                 </li>
               );
@@ -154,6 +154,7 @@ export const SiteNavigation: React.FC<SiteNavigationProps> = ({ activeSection = 
         ref={mobileMenuRef}
         className={`mobile-nav-drawer ${isMobileMenuOpen ? 'is-visible' : ''}`}
         aria-hidden={!isMobileMenuOpen}
+        inert={!isMobileMenuOpen}
       >
         <div
           className="mobile-nav-backdrop"

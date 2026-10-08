@@ -63,6 +63,9 @@ export function HeroSection() {
       scene.style.setProperty('--drive-brightness', String(.55 + smoothstep(0, .3, progress) * .6));
       scene.style.setProperty('--drive-image-opacity', String(.8 + smoothstep(0, .2, progress) * .2));
       scene.style.setProperty('--drive-copy-opacity', String(1 - smoothstep(.04, .4, progress)));
+      const speed = smoothstep(.08, .42, progress) * (1 - smoothstep(.62, .92, Math.max(progress, target)));
+      scene.style.setProperty('--drive-speed', String(reducedMotion.matches ? 0 : speed));
+      scene.style.setProperty('--drive-trail-scale', String(1 + approach * 2));
       scene.dataset.driving = String(progress > .005);
       // Don't replay the entrance animation when the user scrolls back to the top.
       if (target > .005) scene.dataset.scrollStarted = 'true';
@@ -190,6 +193,8 @@ export function HeroSection() {
         <div className="cinema-pointer-light" aria-hidden="true" />
         <div className="cinema-beam cinema-beam-left" aria-hidden="true" />
         <div className="cinema-beam cinema-beam-right" aria-hidden="true" />
+        <div className="cinema-speed-trails" aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
+        <div className="cinema-drive-glow" aria-hidden="true" />
         <div className="cinema-topline"><span><i /> THE MAKING OF A LEGEND</span><span>DRIVER. CREATOR. CHANGEMAKER.</span></div>
         <div className="cinema-title-wrap">
           <p className="cinema-kicker" aria-hidden="true"><span className="cinema-sir">Sir</span><span className="cinema-lewis">LEWIS</span></p>
