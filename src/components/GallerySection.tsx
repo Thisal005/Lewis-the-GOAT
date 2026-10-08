@@ -1,4 +1,4 @@
-import { useRef, useState, type MouseEvent } from 'react';
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import type { GalleryItem } from '../types';
 import { useCinemaReveal } from '../hooks/useCinemaReveal';
 import { LightboxModal } from './LightboxModal';
@@ -22,7 +22,21 @@ export function GallerySection() {
   const [category, setCategory] = useState<GalleryCategory>('all');
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const filterAnimationRef = useRef<Animation | null>(null);
   const sectionRef = useCinemaReveal(category);
+  useEffect(() => () => { filterAnimationRef.current?.cancel(); }, []);
+  const filter = (next: GalleryCategory) => {
+    filterAnimationRef.current?.cancel();
+    filterAnimationRef.current = null;
+    if (next === category) return;
+    const commit = () => { setCategory(next); setActiveIndex(null); };
+    const grid = gridRef.current;
+    if (!grid || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { commit(); return; }
+    const animation = grid.animate([{ opacity: 1, translate: '0 0' }, { opacity: 0, translate: '0 -8px' }], { duration: 160, easing: 'ease-in' });
+    filterAnimationRef.current = animation;
+    animation.finished.then(() => { filterAnimationRef.current = null; commit(); }).catch(() => {});
+  };
   const items = category === 'all' ? collection : collection.filter(item => item.category === category);
   const open = (index: number, event: MouseEvent<HTMLButtonElement>) => { triggerRef.current = event.currentTarget; setActiveIndex(index); };
   const close = () => { setActiveIndex(null); requestAnimationFrame(() => triggerRef.current?.focus()); };
@@ -34,8 +48,8 @@ export function GallerySection() {
           <h2 id="gallery-heading" className="archive-display">FRAME BY<br /><span>FRAME.</span></h2>
           <div><p className="archive-deck">The speed. The stillness. The soul.</p><p className="archive-copy">A collection of defining portraits, racing identity and artistic interpretations. Look closer at the moments between the headlines.</p><span className="archive-micro">SELECT A FRAME TO EXPLORE</span></div>
         </div>
-        <div className="collection-toolbar"><div className="archive-filters" role="group" aria-label="Filter gallery items">{categories.map(item => <button type="button" key={item.id} aria-pressed={category === item.id} onClick={() => { setCategory(item.id); setActiveIndex(null); }}>{item.label}</button>)}</div><p className="archive-micro" role="status" aria-live="polite">{String(items.length).padStart(2, '0')} FRAMES</p></div>
-        <div className={`collection-grid ${category !== 'all' ? 'is-filtered' : ''}`}>
+        <div className="collection-toolbar"><div className="archive-filters" role="group" aria-label="Filter gallery items">{categories.map(item => <button type="button" key={item.id} aria-pressed={category === item.id} onClick={() => filter(item.id)}>{item.label}</button>)}</div><p className="archive-micro" role="status" aria-live="polite">{String(items.length).padStart(2, '0')} FRAMES</p></div>
+        <div ref={gridRef} className={`collection-grid ${category !== 'all' ? 'is-filtered' : ''}`}>
           {items.map((item, index) => <article key={`${category}-${item.id}`} className="collection-frame" data-image={item.id} data-cinema-reveal>
             <button className="collection-trigger" type="button" onClick={event => open(index, event)} aria-haspopup="dialog" aria-label={`Open image: ${item.title}`}>
               <div className="collection-image"><span className="collection-frame-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><img src={item.imageSrc} alt={item.altText} loading="lazy" decoding="async" /><span className="collection-open" aria-hidden="true">VIEW FRAME ↗</span><span className="collection-bg-word" aria-hidden="true">{item.id === 'scarlet' ? 'SCARLET' : item.id === 'victory' ? 'RISE' : item.id === 'goat-art' ? 'GOAT' : '44'}</span></div>
