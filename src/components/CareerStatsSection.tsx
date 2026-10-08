@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { DETAILED_CAREER_STATS, ERA_BREAKDOWN, QUICK_STATS, STATS_VERIFICATION_DATE } from '../data/portfolioData';
 import './CareerStatsSection.css';
+import { CinemaNumber } from './CinemaNumber';
 
 const eraIds = ['mclaren', 'mercedes', 'ferrari'];
 const eraLabels: Record<string, string> = { mclaren: 'McLaren', mercedes: 'Mercedes', ferrari: 'Ferrari' };
@@ -197,7 +198,7 @@ export function CareerStatsSection() {
         </div>
         <dl className="legacy-records" aria-label="Career totals through December 2024">
           {QUICK_STATS.map((record, index) => (
-            <div className="legacy-record" key={record.label}><dt>{recordLabels[index]}</dt><dd>{record.value}</dd></div>
+            <div className="legacy-record" key={record.label}><dt>{recordLabels[index]}</dt><dd><CinemaNumber value={record.value} /></dd></div>
           ))}
         </dl>
         <p className="legacy-snapshot" style={{ paddingTop: '2rem' }}>Career records as of December 2024</p>
@@ -219,7 +220,7 @@ export function CareerStatsSection() {
               <p className="legacy-ferrari-note">The next chapter begins in Maranello. This December 2024 record snapshot predates his Ferrari debut.</p>
             ) : (
               <dl className="legacy-era-metrics">
-                {[[activeEra.championships, 'Titles'], [activeEra.wins, 'Wins'], [activeEra.poles, 'Poles'], [activeEra.podiums, 'Podiums']].map(([value, label]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+                {[[activeEra.championships, 'Titles'], [activeEra.wins, 'Wins'], [activeEra.poles, 'Poles'], [activeEra.podiums, 'Podiums']].map(([value, label]) => <div key={label}><dt>{label}</dt><dd><CinemaNumber value={value} /></dd></div>)}
               </dl>
             )}
             {selectedEra !== 'ferrari' && <p className="legacy-era-starts">{activeEra.races} Grands Prix started during this era.</p>}
